@@ -1,0 +1,56 @@
+.verified-donation h3 {
+  margin-bottom: 18px;
+}
+.pix-donation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  gap: 24px;
+  align-items: center;
+}
+.pix-donation-layout .pix-key {
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+  white-space: nowrap;
+}
+.pix-donation-layout p {
+  font-size: 0.82rem;
+  margin: 5px 0;
+}
+.pix-qr {
+  margin: 0;
+  text-align: center;
+}
+.pix-qr img {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  background: #fff;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.pix-qr figcaption {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin-top: 7px;
+}
+.verified-donation small {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 600px) {
+  .pix-donation-layout {
+    grid-template-columns: 1fr;
+  }
+  .pix-qr {
+    justify-self: start;
+  }
+  .pix-qr img {
+    width: 180px;
+    height: 180px;
+  }
+  .pix-key {
+    font-size: 1.55rem;
+  }
+}

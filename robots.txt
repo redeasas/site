@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://redeasas.org.br/sitemap.xml

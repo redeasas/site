@@ -1,0 +1,171 @@
+.help-widget {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  font-family: var(--sans);
+}
+.help-trigger {
+  border: 0;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--navy);
+  box-shadow: 0 15px 38px rgba(3, 31, 64, 0.25);
+  font-weight: 800;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+.help-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22a35a;
+  box-shadow: 0 0 0 4px rgba(34, 163, 90, 0.17);
+}
+.help-panel {
+  position: absolute;
+  right: 0;
+  bottom: 62px;
+  width: min(365px, calc(100vw - 28px));
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 24px 70px rgba(3, 31, 64, 0.28);
+  padding: 28px;
+  overflow: hidden;
+}
+.help-panel:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5px;
+  background: var(--yellow);
+}
+.help-close {
+  position: absolute;
+  right: 13px;
+  top: 12px;
+  border: 0;
+  background: transparent;
+  color: #738195;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.help-greeting {
+  color: var(--blue);
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+.help-panel h2 {
+  font: 800 1.55rem/1.15 var(--display);
+  color: var(--navy);
+  margin: 0 0 8px;
+}
+.help-panel > p:not(.help-greeting) {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin: 0 0 17px;
+}
+.help-options {
+  display: grid;
+  gap: 8px;
+}
+.help-options a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 13px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+.help-options a:hover {
+  border-color: var(--blue);
+  background: var(--sky);
+}
+.help-options span {
+  color: var(--blue);
+}
+.help-panel small {
+  display: block;
+  color: #8491a2;
+  font-size: 0.68rem;
+  margin-top: 15px;
+}
+.support-hero {
+  background-image:
+    linear-gradient(90deg, rgba(3, 35, 73, 0.96), rgba(3, 35, 73, 0.48)),
+    url("assets/images/apoiar.webp");
+}
+.security-note {
+  border-left: 4px solid var(--yellow);
+  background: var(--soft);
+  padding: 17px 20px;
+  margin: 24px 0;
+}
+.security-note p {
+  font-size: 0.88rem;
+  margin: 5px 0 0;
+}
+.verified-label {
+  display: inline-block;
+  background: #def5e7;
+  color: #17683b;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.verified-donation h3 {
+  font: 700 1.4rem var(--display);
+  color: var(--navy);
+  margin: 22px 0 8px;
+}
+.pix-key {
+  display: block;
+  font: 800 2rem var(--display);
+  color: var(--blue);
+  letter-spacing: -0.03em;
+}
+.verified-donation > p {
+  font-size: 0.88rem;
+}
+.copy-pix {
+  border: 0;
+  background: var(--yellow);
+  color: var(--navy);
+  padding: 12px 16px;
+  border-radius: 5px;
+  font-weight: 800;
+  cursor: pointer;
+  margin: 10px 0 18px;
+}
+.verified-donation small {
+  display: block;
+  color: #768397;
+  line-height: 1.5;
+}
+.help-panel[hidden] {
+  display: none;
+}
+@media (max-width: 600px) {
+  .help-widget {
+    right: 14px;
+    bottom: 14px;
+  }
+  .help-trigger {
+    padding: 13px 16px;
+  }
+  .help-panel {
+    right: 0;
+    bottom: 58px;
+    padding: 24px;
+  }
+}

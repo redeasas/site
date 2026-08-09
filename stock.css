@@ -1,0 +1,77 @@
+/* Imagens editoriais de apoio: Pexels e Pixabay. Fotografias reais da Rede ASAS
+   permanecem nas áreas institucionais e de impacto. */
+.page-hero {
+  background-image:
+    linear-gradient(90deg, rgba(3, 28, 58, .97) 0%, rgba(3, 35, 73, .88) 52%, rgba(3, 35, 73, .58) 100%),
+    url('assets/images/stock-comunidade-pixabay.jpg');
+  background-position: center;
+  background-size: cover;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.project-block {
+  position: relative;
+}
+
+.project-block::after {
+  content: '';
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 280px;
+  background-position: center;
+  background-size: cover;
+  order: -1;
+}
+
+#educacao::after {
+  background-image: linear-gradient(90deg, rgba(6, 39, 81, .16), rgba(6, 39, 81, 0)), url('assets/images/stock-educacao-pexels.jpg');
+}
+
+#esporte::after {
+  background-image: linear-gradient(90deg, rgba(6, 39, 81, .14), rgba(6, 39, 81, 0)), url('assets/images/stock-esporte-pexels.jpg');
+}
+
+#cultura::after {
+  background-image: linear-gradient(90deg, rgba(6, 39, 81, .12), rgba(6, 39, 81, 0)), url('assets/images/galeria-02.webp');
+}
+
+#familias::after {
+  background-image: linear-gradient(90deg, rgba(6, 39, 81, .12), rgba(6, 39, 81, 0)), url('assets/images/galeria-04.webp');
+}
+
+.legacy-grid {
+  position: relative;
+  overflow: hidden;
+}
+
+.legacy-grid::before {
+  content: '30';
+  position: absolute;
+  right: -30px;
+  bottom: -90px;
+  color: rgba(10, 93, 168, .045);
+  font-size: 30rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.12em;
+  pointer-events: none;
+}
+
+.project-cards article {
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.project-cards article:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 22px 50px rgba(6, 39, 81, .10);
+}
+
+@media (max-width: 900px) {
+  .page-hero { min-height: 430px; }
+  .project-block::after { height: 220px; }
+  .legacy-grid::before { font-size: 18rem; }
+}

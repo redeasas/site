@@ -1,0 +1,275 @@
+.button.blue {
+  background: var(--blue);
+  color: #fff;
+}
+.trust-home {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 8vw;
+  padding: 110px clamp(24px, 7vw, 105px);
+}
+.trust-intro h2 {
+  font: 800 clamp(2.7rem, 4.4vw, 4.8rem)/1.03 var(--display);
+  letter-spacing: -0.05em;
+  color: var(--navy);
+  margin: 15px 0 25px;
+}
+.trust-intro > p:not(.eyebrow) {
+  color: var(--muted);
+}
+.trust-intro .button {
+  margin-top: 20px;
+}
+.trust-list {
+  border-top: 1px solid var(--line);
+}
+.trust-list a {
+  display: grid;
+  grid-template-columns: 45px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.trust-list span {
+  color: var(--blue);
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+.trust-list h3 {
+  font: 700 1.2rem var(--display);
+  color: var(--navy);
+  margin: 0 0 5px;
+}
+.trust-list p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.86rem;
+}
+.trust-list b {
+  font-size: 1.2rem;
+  color: var(--blue);
+}
+.ways {
+  padding: 105px clamp(24px, 6vw, 90px);
+  background: var(--sky);
+}
+.ways-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.ways-grid a {
+  background: #fff;
+  padding: 30px;
+  min-height: 300px;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 35px rgba(6, 44, 89, 0.05);
+}
+.ways-grid span,
+.document-grid span,
+.news-grid span {
+  color: var(--blue);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+.ways-grid h3 {
+  font: 700 1.35rem/1.25 var(--display);
+  color: var(--navy);
+  margin: 45px 0 10px;
+}
+.ways-grid p {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.ways-grid b {
+  margin-top: auto;
+  font-size: 0.78rem;
+  color: var(--blue);
+}
+.transparency-hero {
+  background-image:
+    linear-gradient(90deg, rgba(3, 35, 73, 0.96), rgba(3, 35, 73, 0.58)),
+    url("assets/images/novo-predio-planta.jpeg");
+}
+.page-hero > p:last-child {
+  max-width: 650px;
+  color: #dce8f2;
+  font-size: 1.08rem;
+}
+.transparency-summary {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 7vw;
+}
+.transparency-summary dl {
+  margin: 0;
+}
+.transparency-summary dl > div {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.transparency-summary dt {
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.transparency-summary dd {
+  margin: 6px 0 0;
+  color: var(--navy);
+  font-weight: 600;
+}
+.document-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 70px;
+}
+.document-grid article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 32px;
+}
+.document-grid h3 {
+  font: 700 1.4rem var(--display);
+  color: var(--navy);
+  margin: 15px 0 10px;
+}
+.document-grid p {
+  font-size: 0.9rem;
+}
+.document-grid a {
+  color: var(--blue);
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+.transparency-callout {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 8px;
+  padding: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 35px;
+  margin-top: 70px;
+}
+.transparency-callout h2 {
+  color: #fff;
+  font-size: 2.3rem;
+  margin: 0 0 12px;
+}
+.transparency-callout p {
+  color: #c7d5e3;
+  max-width: 800px;
+  margin: 0;
+}
+.news-hero {
+  background-image:
+    linear-gradient(90deg, rgba(3, 35, 73, 0.96), rgba(3, 35, 73, 0.5)),
+    url("assets/images/galeria-06.webp");
+}
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+.news-grid article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.news-grid .news-feature {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+}
+.news-grid img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+.news-grid .news-feature img {
+  height: 480px;
+}
+.news-grid article > div {
+  padding: 28px;
+}
+.news-grid h2 {
+  font-size: 2.4rem;
+}
+.news-grid h3 {
+  font: 700 1.35rem/1.3 var(--display);
+  color: var(--navy);
+}
+.news-grid p {
+  font-size: 0.9rem;
+}
+.instagram-band {
+  background: var(--blue);
+  color: #fff;
+  margin-top: 70px;
+  border-radius: 8px;
+  padding: 48px;
+  display: flex;
+  justify-content: space-between;
+  gap: 35px;
+  align-items: center;
+}
+.instagram-band h2 {
+  font: 800 2.7rem var(--display);
+  margin: 10px 0;
+}
+.instagram-band p {
+  color: #dceaf6;
+  max-width: 700px;
+}
+@media (max-width: 1050px) {
+  .header nav {
+    gap: 11px !important;
+    font-size: 0.77rem !important;
+  }
+  .ways-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 780px) {
+  .trust-home,
+  .transparency-summary {
+    grid-template-columns: 1fr;
+  }
+  .ways-grid,
+  .document-grid,
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  .news-grid .news-feature {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+  .transparency-callout,
+  .instagram-band {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .news-grid .news-feature img {
+    height: 330px;
+  }
+}
+@media (max-width: 500px) {
+  .ways-grid {
+    grid-template-columns: 1fr;
+  }
+  .transparency-callout,
+  .instagram-band {
+    padding: 28px;
+  }
+  .news-grid h2 {
+    font-size: 2rem;
+  }
+}
