@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://redeasas.org.br/</loc></url>
-  <url><loc>https://redeasas.org.br/quem-somos</loc></url>
-  <url><loc>https://redeasas.org.br/projetos</loc></url>
-  <url><loc>https://redeasas.org.br/impacto</loc></url>
-  <url><loc>https://redeasas.org.br/transparencia</loc></url>
-  <url><loc>https://redeasas.org.br/noticias</loc></url>
-  <url><loc>https://redeasas.org.br/novo-predio</loc></url>
-  <url><loc>https://redeasas.org.br/apoie</loc></url>
-  <url><loc>https://redeasas.org.br/privacidade</loc></url>
+  <url><loc>https://redeasas.github.io/site/</loc></url>
+  <url><loc>https://redeasas.github.io/site/quem-somos.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/projetos.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/impacto.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/transparencia.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/historias.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/novo-predio.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/apoie.html</loc></url>
+  <url><loc>https://redeasas.github.io/site/privacidade.html</loc></url>
 </urlset>
