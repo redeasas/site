@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Voluntariado em Belo Horizonte | Rede ASAS Brasil</title>
+    <meta
+      name="description"
+      content="Cadastre seu interesse em voluntariado na Rede ASAS Brasil, projeto social no Taquaril, em Belo Horizonte."
+    />
+    <link rel="icon" href="assets/images/logo-rede-asas-principal-crop.jpeg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header"></header>
+    <main id="conteudo">
+      <section class="page-hero">
+        <p class="overline">Voluntariado</p>
+        <h1>Tempo e conhecimento também transformam.</h1>
+      </section>
+      <section class="content">
+        <nav class="breadcrumb" aria-label="Navegação estrutural">
+          <a href="index.html">Início</a> → Voluntariado
+        </nav>
+        <div class="notice-box">
+          <strong>Como funciona</strong>
+          <p>
+            O cadastro demonstra interesse e não garante convocação imediata. A
+            equipe poderá analisar o perfil, entrar em contato e realizar
+            entrevista. Atividades com crianças dependerão dos requisitos e
+            procedimentos de proteção infantil definidos pela instituição.
+          </p>
+        </div>
+      </section>
+      <section class="lead-section">
+        <h2>Cadastro de interesse</h2>
+        <form class="lead-form" data-lead-form data-form-type="voluntariado">
+          <div class="form-grid">
+            <label
+              >Nome completo<input
+                name="nome"
+                autocomplete="name"
+                required /></label
+            ><label
+              >E-mail<input
+                type="email"
+                name="email"
+                autocomplete="email"
+                required /></label
+            ><label
+              >WhatsApp<input
+                type="tel"
+                name="telefone"
+                autocomplete="tel"
+                required /></label
+            ><label
+              >Cidade<input
+                name="cidade"
+                autocomplete="address-level2"
+                required /></label
+            ><label
+              >Área de interesse<input name="area_interesse" required /></label
+            ><label>Formação<input name="formacao" /></label
+            ><label>Habilidades<input name="habilidades" required /></label
+            ><label
+              >Disponibilidade<input name="disponibilidade" required /></label
+            ><label
+              >Frequência<select name="frequencia" required>
+                <option value="">Selecione</option>
+                <option>Ação pontual</option>
+                <option>Semanal</option>
+                <option>Quinzenal</option>
+                <option>Mensal</option>
+                <option>A combinar</option>
+              </select></label
+            ><label
+              >Modalidade<select name="modalidade" required>
+                <option value="">Selecione</option>
+                <option>Presencial</option>
+                <option>Remoto</option>
+                <option>Ambos</option>
+              </select></label
+            ><label
+              >Experiência com crianças<select
+                name="experiencia_criancas"
+                required
+              >
+                <option value="">Selecione</option>
+                <option>Sim</option>
+                <option>Não</option>
+              </select></label
+            >
+          </div>
+          <label>Mensagem<textarea name="mensagem"></textarea></label
+          ><label class="honeypot"
+            >Não preencha<input
+              name="website"
+              tabindex="-1"
+              autocomplete="off" /></label
+          ><label class="consent"
+            ><input type="checkbox" name="consentimento" required /> Autorizo o
+            uso destes dados para análise e contato, conforme a
+            <a href="privacidade.html">Política de Privacidade</a>.</label
+          ><button class="button blue" type="submit">
+            Preparar cadastro por e-mail
+          </button>
+          <p class="form-status" data-form-status aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+    <footer class="footer"></footer>
+    <script src="site-config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

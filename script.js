@@ -25,7 +25,8 @@
   let canonical = document.querySelector('link[rel="canonical"]');
   if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
   canonical.href = `${urls.canonical}${canonicalPath}`;
-  const socialImage = `${urls.canonical}/assets/images/hero-fachada-rede-asas.jpeg`;
+  const socialImage = `${urls.canonical}/assets/images/social-rede-asas-1200x630.png`;
+  if (!document.querySelector('link[rel="apple-touch-icon"]')) { const icon = document.createElement("link"); icon.rel = "apple-touch-icon"; icon.href = "assets/images/logo-rede-asas-principal-crop.jpeg"; document.head.appendChild(icon); }
   const metas = { "og:type": "website", "og:locale": "pt_BR", "og:site_name": org.publicName, "og:title": document.title, "og:description": document.querySelector('meta[name="description"]')?.content || "", "og:url": canonical.href, "og:image": socialImage, "twitter:card": "summary_large_image" };
   Object.entries(metas).forEach(([key, content]) => { let meta = document.querySelector(`meta[property="${key}"],meta[name="${key}"]`); if (!meta) { meta = document.createElement("meta"); meta.setAttribute(key.startsWith("twitter") ? "name" : "property", key); document.head.appendChild(meta); } meta.content = content; });
   const graph = [{ "@type": "NGO", "@id": `${urls.canonical}/#organization`, name: org.publicName, legalName: org.legalName, url: urls.canonical, email: org.email, telephone: org.whatsappDisplay, taxID: org.cnpj, foundingDate: String(org.foundedYear), address: { "@type": "PostalAddress", streetAddress: "Rua Alair Pereira da Silva, 205", addressLocality: "Belo Horizonte", addressRegion: "MG", addressCountry: "BR" }, sameAs: [org.instagram] }, { "@type": "WebSite", "@id": `${urls.canonical}/#website`, url: `${urls.canonical}/`, name: org.publicName, publisher: { "@id": `${urls.canonical}/#organization` }, inLanguage: "pt-BR" }];
@@ -43,7 +44,7 @@
   }
 
   const footer = document.querySelector("footer.footer");
-  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="transparencia.html">Transparência</a></div><div><h3>Participe</h3><a href="novo-predio.html">Novo prédio</a><a href="apoie.html">Quero apoiar</a><a href="historias.html">Histórias e conquistas</a><a href="privacidade.html">Privacidade</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
+  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="transparencia.html">Transparência</a><a href="historias.html">Histórias</a></div><div><h3>Participe</h3><a href="apoie.html">Quero apoiar</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a><a href="apoiador.html">Já sou apoiador</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
 
   document.querySelectorAll("main").forEach((main) => { if (!main.id) main.id = "conteudo"; });
   if (!document.querySelector(".skip-link")) document.body.insertAdjacentHTML("afterbegin", '<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>');
@@ -72,6 +73,12 @@
     const link = event.target.closest("a"); if (!link) return;
     if (link.href.includes("wa.me")) track("whatsapp_click", { link_text: link.textContent.trim() });
     if (link.href.includes("benfeitoria.com")) track("campaign_click", { link_text: link.textContent.trim() });
+    if (link.href.startsWith("mailto:")) track("email_click", { link_text: link.textContent.trim() });
+    if (link.hasAttribute("data-share")) track("share_click", { channel: link.dataset.share });
+    if (link.hasAttribute("download")) track("document_download", { link_url: link.href });
+    if (link.href.includes("empresas.html")) track("business_interest", { link_text: link.textContent.trim() });
+    if (link.href.includes("voluntariado.html")) track("volunteer_interest", { link_text: link.textContent.trim() });
+    if (link.href.includes("apoiador.html")) track("supporter_area_visit", { link_text: link.textContent.trim() });
     if (link.closest(".hero-actions,.cta,.ways-grid")) track("cta_click", { link_text: link.textContent.trim(), link_url: link.href });
   });
 
@@ -86,10 +93,13 @@
     const lines = [...data.entries()].filter(([key]) => !["website", "consentimento"].includes(key)).map(([key,value]) => `${key}: ${value}`);
     lines.push(`Página de origem: ${location.href}`);
     ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((key) => { if (query.get(key)) lines.push(`${key}: ${query.get(key)}`); });
-    track("lead_submit", { lead_type: data.get("interesse") || form.dataset.formType || "contato" });
-    const subject = `Contato pelo site — ${data.get("interesse") || form.dataset.formType || "Rede ASAS"}`;
-    window.location.href = `mailto:${org.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+    const leadType = data.get("interesse") || form.dataset.formType || "contato";
     const status = form.querySelector("[data-form-status]");
+    track("lead_submit", { lead_type: leadType });
+    if (form.dataset.formType === "newsletter") track("newsletter_interest", { preferences: data.getAll("preferencias").join(",") });
+    const subject = `Contato pelo site — ${data.get("interesse") || form.dataset.formType || "Rede ASAS"}`;
+    try { window.location.href = `mailto:${org.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`; }
+    catch { track("form_error", { lead_type: leadType }); if (status) status.textContent = "Não foi possível abrir o e-mail. Use o WhatsApp oficial para concluir o contato."; form.dataset.submitting = "false"; return; }
     if (status) status.textContent = "Seu aplicativo de e-mail será aberto. O contato só será enviado após você confirmar a mensagem nele.";
     setTimeout(() => { form.dataset.submitting = "false"; }, 3000);
   }));

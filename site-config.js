@@ -33,6 +33,16 @@ window.ASAS_CONFIG = Object.freeze({
     { id: "programs", value: "11", label: "frentes de atuação social", concept: "Frentes ou iniciativas informadas pela instituição; relação e critério de contagem em validação.", period: null, status: "institutional-review", source: null, baseDate: null, methodology: null, updatedAt: null },
     { id: "history", value: "30", label: "anos de atuação em 2026", concept: "Tempo decorrido desde o ano de fundação informado, 1996.", period: "1996–2026", status: "institutional", source: "Informação institucional: fundação em 1996", baseDate: "2026", methodology: "Diferença entre os anos de 2026 e 1996", updatedAt: "2026-08-09" },
   ],
+  impactDimensions: {
+    peopleUnique: null,
+    servicesDelivered: null,
+    childrenEnrolled: null,
+    childrenFollowed: null,
+    familiesReached: null,
+    participantsByProject: null,
+    monthlyResults: null,
+    annualResults: null,
+  },
   building: {
     area: "640 m²",
     estimate: "R$ 3.321.980,35",
@@ -48,6 +58,9 @@ window.ASAS_CONFIG = Object.freeze({
     currentStage: null,
   },
   transparencyDocuments: [],
+  governance: { board: [], certifications: [], authorizedPartners: [], integrityChannel: null, childProtectionPolicy: null },
+  contribution: { totalInvested: null, balance: null, recurringAvailable: false, cardsAvailable: false, boletoAvailable: false, receiptAutomationAvailable: false },
+  integrations: { crm: null, newsletter: null, analytics: null, formService: null },
   forms: { endpoint: null, mode: "email-fallback" },
   publicReviewMessage: "Dados institucionais em processo de atualização.",
 });

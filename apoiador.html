@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Já sou apoiador | Rede ASAS Brasil</title>
+    <meta
+      name="description"
+      content="Central inicial de atendimento para apoiadores da Rede ASAS Brasil, sem login e sem armazenamento de dados nesta fase."
+    />
+    <link rel="icon" href="assets/images/logo-rede-asas-principal-crop.jpeg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header"></header>
+    <main id="conteudo">
+      <section class="page-hero">
+        <p class="overline">Atendimento</p>
+        <h1>Já sou apoiador</h1>
+        <p>
+          Uma central simples para encontrar o canal correto — sem login ou
+          portal fictício.
+        </p>
+      </section>
+      <section class="support-path">
+        <nav class="breadcrumb" aria-label="Navegação estrutural">
+          <a href="index.html">Início</a> → Já sou apoiador
+        </nav>
+        <div class="journey-grid">
+          <article class="journey-card">
+            <h2>Atualizar dados</h2>
+            <p>Solicite atualização de contato diretamente à equipe.</p>
+            <a
+              class="button blue"
+              href="mailto:contato@redeasas.org.br?subject=Atualização%20de%20dados%20de%20apoiador"
+              >Solicitar por e-mail</a
+            >
+          </article>
+          <article class="journey-card">
+            <h2>Enviar comprovante</h2>
+            <p>
+              Converse com o atendimento antes de transmitir documentos ou dados
+              financeiros.
+            </p>
+            <a
+              class="button blue"
+              href="https://wa.me/5531989608865?text=Olá!%20Acessei%20a%20área%20do%20apoiador%20e%20gostaria%20de%20orientação%20para%20enviar%20um%20comprovante."
+              >Pedir orientação</a
+            >
+          </article>
+          <article class="journey-card">
+            <h2>Solicitar recibo</h2>
+            <p>O processo não é automático nesta fase.</p>
+            <a
+              class="button blue"
+              href="mailto:contato@redeasas.org.br?subject=Solicitação%20de%20recibo"
+              >Solicitar recibo</a
+            >
+          </article>
+          <article class="journey-card">
+            <h2>Contribuição recorrente</h2>
+            <p>
+              Alteração ou cancelamento deve ser tratado conforme o canal ou
+              plataforma em que a contribuição foi contratada.
+            </p>
+            <a
+              class="button blue"
+              href="https://wa.me/5531989608865?text=Olá!%20Acessei%20a%20área%20do%20apoiador%20e%20preciso%20de%20orientação%20sobre%20uma%20contribuição%20recorrente."
+              >Falar com atendimento</a
+            >
+          </article>
+          <article class="journey-card">
+            <h2>Acompanhar resultados</h2>
+            <p>
+              Consulte indicadores, relatórios disponíveis e a evolução do novo
+              prédio.
+            </p>
+            <a class="button blue" href="impacto.html">Ver impacto</a>
+          </article>
+          <article class="journey-card">
+            <h2>Transparência</h2>
+            <p>
+              Veja o que já está publicado e solicite documentos à instituição.
+            </p>
+            <a class="button blue" href="transparencia.html">Consultar</a>
+          </article>
+        </div>
+      </section>
+      <section class="lead-section">
+        <p class="overline blue">Receber atualizações</p>
+        <h2>Escolha os assuntos de seu interesse.</h2>
+        <form class="lead-form" data-lead-form data-form-type="newsletter">
+          <div class="form-grid">
+            <label>Nome<input name="nome" autocomplete="name" required /></label
+            ><label
+              >E-mail<input
+                type="email"
+                name="email"
+                autocomplete="email"
+                required
+            /></label>
+          </div>
+          <fieldset>
+            <legend>Preferências</legend>
+            <div class="choice-list">
+              <label
+                ><input
+                  type="checkbox"
+                  name="preferencias"
+                  value="Atualizações institucionais"
+                />
+                Atualizações institucionais</label
+              ><label
+                ><input type="checkbox" name="preferencias" value="Projetos" />
+                Notícias dos projetos</label
+              ><label
+                ><input
+                  type="checkbox"
+                  name="preferencias"
+                  value="Novo prédio"
+                />
+                Atualizações do novo prédio</label
+              ><label
+                ><input
+                  type="checkbox"
+                  name="preferencias"
+                  value="Prestação de contas"
+                />
+                Prestação de contas</label
+              ><label
+                ><input
+                  type="checkbox"
+                  name="preferencias"
+                  value="Voluntariado"
+                />
+                Oportunidades de voluntariado</label
+              ><label
+                ><input type="checkbox" name="preferencias" value="Empresas" />
+                Informações para empresas</label
+              >
+            </div>
+          </fieldset>
+          <label class="honeypot"
+            >Não preencha<input
+              name="website"
+              tabindex="-1"
+              autocomplete="off" /></label
+          ><label class="consent"
+            ><input type="checkbox" name="consentimento" required /> Autorizo o
+            contato sobre as preferências escolhidas, conforme a
+            <a href="privacidade.html">Política de Privacidade</a>.</label
+          ><button class="button blue" type="submit">
+            Preparar cadastro por e-mail
+          </button>
+          <p class="form-status" data-form-status aria-live="polite"></p>
+          <small
+            >Não há plataforma de disparo configurada. O cadastro será preparado
+            para envio por e-mail e só será concluído após sua
+            confirmação.</small
+          >
+        </form>
+      </section>
+    </main>
+    <footer class="footer"></footer>
+    <script src="site-config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
