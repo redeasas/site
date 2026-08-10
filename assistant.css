@@ -74,7 +74,10 @@
   display: grid;
   gap: 8px;
 }
-.help-options a {
+.help-options a,
+.help-options button,
+.help-actions a,
+.help-actions button {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -84,14 +87,26 @@
   font-size: 0.83rem;
   font-weight: 700;
   color: var(--navy);
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
 }
-.help-options a:hover {
+.help-options a:hover,
+.help-options button:hover,
+.help-actions a:hover,
+.help-actions button:hover {
   border-color: var(--blue);
   background: var(--sky);
 }
 .help-options span {
   color: var(--blue);
 }
+.help-message { border-radius: 10px; font-size: .84rem; line-height: 1.55; margin: 10px 0; padding: 11px 13px; }
+.help-message.bot { background: var(--sky); color: var(--navy); margin-right: 16px; }
+.help-message.user { background: var(--navy); color: #fff; margin-left: 42px; }
+.help-actions { display: grid; gap: 8px; margin-top: 12px; }
+.help-actions a,.help-actions button { border: 1px solid var(--line); border-radius: 6px; font: 700 .8rem var(--sans); padding: 11px 12px; }
+.help-actions .help-whatsapp { background: #17683b; border-color: #17683b; color: #fff; }
 .help-panel small {
   display: block;
   color: #8491a2;

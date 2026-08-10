@@ -1,0 +1,87 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const allowedOrigins = new Set([
+  "https://redeasas.github.io",
+  "http://127.0.0.1:4173",
+  "http://localhost:4173",
+]);
+
+const text = (value: unknown, max: number) =>
+  typeof value === "string" ? value.trim().slice(0, max) : "";
+
+const hash = async (value: string) => {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+};
+
+Deno.serve(async (request) => {
+  const origin = request.headers.get("origin") || "";
+  const cors = {
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://redeasas.github.io",
+    "Access-Control-Allow-Headers": "content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (request.method !== "POST" || !allowedOrigins.has(origin)) return Response.json({ error: "not_allowed" }, { status: 403, headers: cors });
+  if (!request.headers.get("content-type")?.includes("application/json")) return Response.json({ error: "invalid_content_type" }, { status: 415, headers: cors });
+
+  let payload: Record<string, unknown>;
+  try { payload = await request.json(); }
+  catch { return Response.json({ error: "invalid_json" }, { status: 400, headers: cors }); }
+
+  if (text(payload.website, 10)) return Response.json({ ok: true }, { status: 202, headers: cors });
+  const startedAt = Number(payload.started_at || 0);
+  const submittedAt = Number(payload.submitted_at || 0);
+  if (!startedAt || !submittedAt || submittedAt - startedAt < 2500 || submittedAt - startedAt > 86_400_000) {
+    return Response.json({ error: "invalid_submission_time" }, { status: 400, headers: cors });
+  }
+
+  const name = text(payload.nome, 120);
+  const email = text(payload.email, 180).toLowerCase();
+  const phone = text(payload.telefone, 40);
+  const consent = [true, "true", "on", "sim"].includes(payload.consentimento as never);
+  if (!name || (!email && !phone) || !consent) return Response.json({ error: "missing_required_fields" }, { status: 422, headers: cors });
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return Response.json({ error: "invalid_email" }, { status: 422, headers: cors });
+
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ipHash = await hash(`${forwarded}:${Deno.env.get("LEAD_HASH_SALT") || "asas"}`);
+  const windowStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
+  const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+  const { data: rate } = await supabase.from("asas_lead_rate_limits").select("request_count").eq("ip_hash", ipHash).eq("window_start", windowStart).maybeSingle();
+  if ((rate?.request_count || 0) >= 8) return Response.json({ error: "rate_limited" }, { status: 429, headers: { ...cors, "Retry-After": "3600" } });
+  await supabase.from("asas_lead_rate_limits").upsert({ ip_hash: ipHash, window_start: windowStart, request_count: (rate?.request_count || 0) + 1 });
+
+  const preferences = Array.isArray(payload.preferencias)
+    ? payload.preferencias.map((item) => text(item, 100)).filter(Boolean).slice(0, 10)
+    : text(payload.preferencias, 100) ? [text(payload.preferencias, 100)] : [];
+  const record = {
+    idempotency_key: text(payload.idempotency_key, 100),
+    form_type: text(payload.form_type, 80) || "contato",
+    name,
+    email: email || null,
+    phone: phone || null,
+    interest: text(payload.interesse, 180) || null,
+    organization: text(payload.empresa || payload.cnpj, 180) || null,
+    message: text(payload.mensagem, 4000) || null,
+    preferences,
+    consent: true,
+    consent_at: new Date().toISOString(),
+    page_url: text(payload.page_url, 1000),
+    referrer: text(payload.referrer, 1000) || null,
+    utm_source: text(payload.utm_source, 180) || null,
+    utm_medium: text(payload.utm_medium, 180) || null,
+    utm_campaign: text(payload.utm_campaign, 180) || null,
+    utm_content: text(payload.utm_content, 180) || null,
+    utm_term: text(payload.utm_term, 180) || null,
+    user_agent: text(request.headers.get("user-agent"), 500) || null,
+    ip_hash: ipHash,
+  };
+  if (!record.idempotency_key || !record.page_url) return Response.json({ error: "invalid_metadata" }, { status: 422, headers: cors });
+  const { data: inserted, error } = await supabase.from("asas_leads").insert(record).select("id").single();
+  if (error?.code === "23505") return Response.json({ ok: true, duplicate: true }, { status: 200, headers: cors });
+  if (error) return Response.json({ error: "storage_failed" }, { status: 500, headers: cors });
+  if (record.form_type === "integration_test" && inserted?.id) await supabase.from("asas_leads").delete().eq("id", inserted.id);
+  return Response.json({ ok: true }, { status: 201, headers: { ...cors, "Cache-Control": "no-store" } });
+});
