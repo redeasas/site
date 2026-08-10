@@ -1,0 +1,3 @@
+[functions.lead-capture]
+verify_jwt = false
+
