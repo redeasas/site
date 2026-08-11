@@ -12,7 +12,7 @@ window.ASAS_CONFIG = Object.freeze({
     instagram: "https://www.instagram.com/redeasasbr/",
     facebook: null,
     foundedDate: null,
-    lastUpdated: "2026-08-09",
+    lastUpdated: "2026-08-11",
   },
   urls: {
     canonical: "https://redeasas.github.io/site",
