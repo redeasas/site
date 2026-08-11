@@ -6,7 +6,10 @@ Landing page institucional estática para apresentação da REDE ASAS BRASIL a e
 
 - `index.html`: conteúdo completo da landing page.
 - `styles.css`: layout responsivo, visual institucional e animações suaves.
-- `script.js`: menu mobile, animações e envio do formulário por e-mail.
+- `script.js`: menu mobile, métricas consentidas, chatbot e envio seguro dos formulários.
+- `supabase/`: banco protegido, retenção e função de captura dos contatos.
+- `docs/OPERACAO_DO_SITE.md`: rotina interna de atendimento, segurança e manutenção.
+- `dados-internos/`: modelos para validar impacto, obra e transparência antes da publicação.
 - `assets/images/`: imagens, logos dos projetos e QR Code PIX.
 
 ## Doação

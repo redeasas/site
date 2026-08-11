@@ -15,6 +15,35 @@ const hash = async (value: string) => {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
+const escapeHtml = (value: unknown) => text(value, 4000)
+  .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+  .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+
+const notifyTeam = async (record: Record<string, unknown>, leadId: string) => {
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  const to = Deno.env.get("LEAD_NOTIFICATION_TO");
+  if (!apiKey || !to) return { status: "pendente", error: "notification_not_configured" };
+  const from = Deno.env.get("LEAD_NOTIFICATION_FROM") || "Rede ASAS Brasil <onboarding@resend.dev>";
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": `asas-lead-${leadId}` },
+    body: JSON.stringify({
+      from, to: [to], reply_to: record.email || undefined,
+      subject: `Novo contato pelo site — ${text(record.form_type, 80)}`,
+      html: `<h2>Novo contato recebido pelo site</h2>
+        <p><strong>Nome:</strong> ${escapeHtml(record.name)}</p>
+        <p><strong>E-mail:</strong> ${escapeHtml(record.email) || "Não informado"}</p>
+        <p><strong>Telefone:</strong> ${escapeHtml(record.phone) || "Não informado"}</p>
+        <p><strong>Assunto:</strong> ${escapeHtml(record.interest || record.form_type)}</p>
+        <p><strong>Organização:</strong> ${escapeHtml(record.organization) || "Não informada"}</p>
+        <p><strong>Mensagem:</strong><br>${escapeHtml(record.message).replaceAll("\n", "<br>") || "Não informada"}</p>
+        <hr><p>Registro ${escapeHtml(leadId)}. Acesse o projeto Rede ASAS Brasil no Supabase para acompanhar o atendimento.</p>`,
+    }),
+  });
+  if (response.ok) return { status: "enviada", error: null };
+  return { status: "falhou", error: `resend_${response.status}` };
+};
+
 Deno.serve(async (request) => {
   const origin = request.headers.get("origin") || "";
   const cors = {
@@ -82,6 +111,15 @@ Deno.serve(async (request) => {
   const { data: inserted, error } = await supabase.from("asas_leads").insert(record).select("id").single();
   if (error?.code === "23505") return Response.json({ ok: true, duplicate: true }, { status: 200, headers: cors });
   if (error) return Response.json({ error: "storage_failed" }, { status: 500, headers: cors });
-  if (record.form_type === "integration_test" && inserted?.id) await supabase.from("asas_leads").delete().eq("id", inserted.id);
+  if (record.form_type === "integration_test" && inserted?.id) {
+    await supabase.from("asas_leads").delete().eq("id", inserted.id);
+  } else if (inserted?.id) {
+    try {
+      const notification = await notifyTeam(record, inserted.id);
+      await supabase.from("asas_leads").update({ notification_status: notification.status, notification_error: notification.error }).eq("id", inserted.id);
+    } catch {
+      await supabase.from("asas_leads").update({ notification_status: "falhou", notification_error: "unexpected_notification_error" }).eq("id", inserted.id);
+    }
+  }
   return Response.json({ ok: true }, { status: 201, headers: { ...cors, "Cache-Control": "no-store" } });
 });

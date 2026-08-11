@@ -1,0 +1,8 @@
+indicador,valor,periodo,data_base,definicao,metodologia,fonte_documental,responsavel,status
+pessoas_unicas,,,,Pessoa contada uma vez no período,,,,pendente
+atendimentos,,,,Total de participações ou serviços prestados,,,,pendente
+criancas_matriculadas,,,,Matrículas ativas na Educação Infantil,,,,pendente
+criancas_acompanhadas,,,,Crianças com acompanhamento no período,,,,pendente
+familias_alcancadas,,,,Famílias únicas acompanhadas no período,,,,pendente
+frentes_ativas,,,,Projetos ou serviços ativos conforme critério oficial,,,,pendente
+
