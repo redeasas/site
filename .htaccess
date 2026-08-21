@@ -1,0 +1,53 @@
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# Aplicar somente depois que estes arquivos substituírem o WordPress na Hostinger.
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\.redeasas\.org\.br$ [NC]
+RewriteRule ^ https://redeasas.org.br%{REQUEST_URI} [R=301,L]
+
+# Materiais operacionais permanecem fora da área pública.
+RewriteRule ^(?:supabase|docs|dados-internos|scripts|rascunhos)(?:/|$) - [R=404,L,NC]
+
+# Mapa de URLs do WordPress para o novo site.
+RewriteRule ^rede-asas-brasil-sobre/?$ /quem-somos [R=301,L,NC]
+RewriteRule ^titulo-2/?$ /quem-somos [R=301,L,NC]
+RewriteRule ^rede-asas-brasil-projetos/?$ /projetos [R=301,L,NC]
+RewriteRule ^titulo-1/?$ /projetos [R=301,L,NC]
+RewriteRule ^(?:familias-fortes|viver-bem|comunicacao-e-midias|esporte-e-cultura|educacao-e-capacitacao|centro-infantil-caminho-do-ceu)/?$ /projetos [R=301,L,NC]
+RewriteRule ^(?:rede-asas-brasil-como-apoiar|quero-doar|rede-asas-brasil-como-apoiar-apadrinhamento|titulo-3)/?$ /apoie [R=301,L,NC]
+RewriteRule ^rede-asas-brasil-como-apoiar-apoios-de-empresas/?$ /empresas [R=301,L,NC]
+RewriteRule ^rede-asas-brasil-como-apoiar-voluntario/?$ /voluntariado [R=301,L,NC]
+RewriteRule ^rede-asas-brasil-contato/?$ /apoie#formulario [R=301,L,NE,NC]
+RewriteRule ^rede-asas-brasil-noticias/?$ /historias [R=301,L,NC]
+RewriteRule ^rede-asas-brasil-transparencia/?$ /confiar [R=301,L,NC]
+RewriteRule ^(?:loja|carrinho|finalizar-compra|minha-conta)/?$ /apoie [R=301,L,NC]
+RewriteRule ^(?:category/uncategorized|author/gdiniz-webgmail-com)/?$ /historias [R=301,L,NC]
+
+# URLs canônicas sem extensão, mantendo os arquivos HTML estáticos.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://yljvlllrvibyongccgmz.supabase.co; frame-src https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com; font-src 'self' data:; form-action 'self'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+</IfModule>
+

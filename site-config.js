@@ -15,9 +15,9 @@ window.ASAS_CONFIG = Object.freeze({
     lastUpdated: "2026-08-11",
   },
   urls: {
-    canonical: "https://redeasas.github.io/site",
+    canonical: "https://redeasas.org.br",
     officialDomain: "https://redeasas.org.br",
-    published: "https://redeasas.github.io/site",
+    published: "https://redeasas.org.br",
     campaign: "https://benfeitoria.com/projeto/ampliacaoredeasasbrasil",
   },
   donation: {
@@ -75,7 +75,7 @@ window.ASAS_CONFIG = Object.freeze({
   forms: {
     endpoint: "https://yljvlllrvibyongccgmz.supabase.co/functions/v1/lead-capture",
     mode: "secure-api-with-email-fallback",
-    allowedOrigin: "https://redeasas.github.io",
+    allowedOrigins: ["https://redeasas.org.br", "https://www.redeasas.org.br", "https://redeasas.github.io"],
   },
   publicReviewMessage: "Dados institucionais em processo de atualização.",
 });
