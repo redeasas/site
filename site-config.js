@@ -54,6 +54,8 @@ window.ASAS_CONFIG = Object.freeze({
     structuralProjectDate: "2026-07-14",
     structuralSheetsReceived: 17,
     foundationElements: { caissons: 17, piles: 6 },
+    architectureLevels: ["térreo", "primeiro subsolo", "segundo subsolo", "terraço"],
+    soilSurvey: { report: "RL 165", date: "2026-07-01", boreholes: 2, investigatedMeters: 13.75, groundwaterObserved: false },
     technicalSource: "Pranchas 01 e 02 do projeto estrutural, emissão inicial de 14/07/2026, iSATO Engenharia; conjunto de 17 arquivos estruturais fornecido pela instituição.",
     budgetSource: "Orçamento_Preliminar_Rede_ASAS_Brasil.xlsx, recebido em julho de 2026.",
     raised: null,
