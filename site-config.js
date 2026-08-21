@@ -69,7 +69,7 @@ window.ASAS_CONFIG = Object.freeze({
     crm: null,
     newsletter: null,
     analytics: { measurementId: "G-XJ3L8N2SCW" },
-    searchConsole: { verificationToken: "cRd9OG2MlK-4SFn41wg5Sc2_uhJGiycnTo5fets120w" },
+    searchConsole: { verificationToken: "QudVoDaeibsi7dxUy8qIQ1zZvFz30BoqXCZ_RZFLCM8" },
     formService: "Supabase Edge Function — projeto exclusivo Rede ASAS Brasil",
   },
   forms: {

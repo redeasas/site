@@ -29,6 +29,39 @@ function rede_asas_static_content_type(string $path): string {
     return $types[$extension] ?? 'application/octet-stream';
 }
 
+/**
+ * Serve the discovery files before WordPress or SEO plugins can redirect them.
+ */
+function rede_asas_serve_discovery_files(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $files = [
+        '/robots.txt' => ['robots.txt', 'text/plain; charset=UTF-8'],
+        '/sitemap.xml' => ['sitemap.xml', 'application/xml; charset=UTF-8'],
+    ];
+
+    if (!isset($files[$requestPath])) {
+        return;
+    }
+
+    [$relativePath, $contentType] = $files[$requestPath];
+    $candidate = get_template_directory() . '/site/' . $relativePath;
+    if (!is_file($candidate)) {
+        return;
+    }
+
+    status_header(200);
+    header('Content-Type: ' . $contentType);
+    header('Cache-Control: no-cache, must-revalidate');
+    header('X-Content-Type-Options: nosniff');
+    readfile($candidate);
+    exit;
+}
+add_action('init', 'rede_asas_serve_discovery_files', -999);
+
 function rede_asas_static_router(): void {
     if (is_admin()) {
         return;
@@ -93,6 +126,16 @@ function rede_asas_static_router(): void {
         header('Content-Type: text/html; charset=UTF-8');
         header('Cache-Control: no-cache, must-revalidate');
         $html = file_get_contents($candidate);
+        $verificationMeta = '<meta name="google-site-verification" content="QudVoDaeibsi7dxUy8qIQ1zZvFz30BoqXCZ_RZFLCM8" />';
+        $html = preg_replace(
+            '/<meta\s+name=["\']google-site-verification["\']\s+content=["\'][^"\']+["\']\s*\/?\s*>/i',
+            $verificationMeta,
+            $html,
+            1
+        );
+        if (stripos($html, 'name="google-site-verification"') === false) {
+            $html = str_ireplace('</head>', '  ' . $verificationMeta . "\n</head>", $html);
+        }
         $assetBase = trailingslashit(get_template_directory_uri()) . 'site/';
         $html = str_replace(
             [
