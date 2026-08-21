@@ -2,6 +2,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const allowedOrigins = new Set([
   "https://redeasas.github.io",
+  "https://redeasas.org.br",
+  "https://www.redeasas.org.br",
   "http://127.0.0.1:4173",
   "http://localhost:4173",
 ]);
@@ -47,7 +49,7 @@ const notifyTeam = async (record: Record<string, unknown>, leadId: string) => {
 Deno.serve(async (request) => {
   const origin = request.headers.get("origin") || "";
   const cors = {
-    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://redeasas.github.io",
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://redeasas.org.br",
     "Access-Control-Allow-Headers": "content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin",
