@@ -24,6 +24,7 @@ function rede_asas_static_content_type(string $path): string {
         'svg' => 'image/svg+xml',
         'ico' => 'image/x-icon',
         'pdf' => 'application/pdf',
+        'mp4' => 'video/mp4',
     ];
 
     return $types[$extension] ?? 'application/octet-stream';
