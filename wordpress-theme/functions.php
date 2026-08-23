@@ -151,6 +151,7 @@ function rede_asas_static_router(): void {
         $configVersion = (string) filemtime($siteRoot . '/site-config.js');
         $html = str_replace(
             [
+                'src="assets/videos/',
                 'href="styles.css"',
                 'src="script.js"',
                 'src="site-config.js"',
@@ -160,6 +161,7 @@ function rede_asas_static_router(): void {
                 'src="assets/',
             ],
             [
+                'src="https://redeasas.github.io/site/assets/videos/',
                 'href="' . esc_url($assetBase . 'styles.css?v=' . $stylesVersion) . '"',
                 'src="' . esc_url($assetBase . 'script.js?v=' . $scriptVersion) . '"',
                 'src="' . esc_url($assetBase . 'site-config.js?v=' . $configVersion) . '"',

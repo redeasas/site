@@ -19,6 +19,9 @@ cp "$repo_dir"/*.js "$theme_dir/site/"
 cp "$repo_dir/robots.txt" "$theme_dir/site/robots.txt"
 cp "$repo_dir/sitemap.xml" "$theme_dir/site/sitemap.xml"
 cp -R "$repo_dir/assets/." "$theme_dir/site/assets/"
+# The authorized testimonial videos are served by GitHub Pages to keep the
+# WordPress upload package below the hosting provider's request-size limit.
+rm -rf "$theme_dir/site/assets/videos"
 
 rm -f "$archive_path"
 (cd "$build_dir" && zip -qr "$archive_path" "rede-asas-brasil")
