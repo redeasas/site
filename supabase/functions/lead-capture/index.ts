@@ -21,6 +21,20 @@ const escapeHtml = (value: unknown) => text(value, 4000)
   .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 
+const scoreCompanyLead = (payload: Record<string, unknown>) => {
+  let score = 0;
+  if (text(payload.empresa, 180)) score += 10;
+  if (text(payload.email, 180) && !/@(gmail|hotmail|outlook|yahoo)\./i.test(text(payload.email, 180))) score += 10;
+  if (text(payload.cnpj, 30)) score += 10;
+  if (/diretor|presidente|sócio|socio|ceo|gerente|coordenador|rh|esg|sustentabilidade/i.test(text(payload.cargo, 100))) score += 15;
+  if (text(payload.faixa_apoio, 100) && !/prefiro/i.test(text(payload.faixa_apoio, 100))) score += 15;
+  if (text(payload.projeto, 180)) score += 10;
+  if (/imediato|30 dias|90 dias/i.test(text(payload.prazo, 80))) score += 15;
+  if (/reunião|reuniao|conversa|proposta/i.test(text(payload.mensagem, 4000))) score += 15;
+  const classification = score >= 81 ? "prioridade" : score >= 61 ? "oportunidade" : score >= 31 ? "qualificado" : "novo";
+  return { score: Math.min(score, 100), classification };
+};
+
 const notifyTeam = async (record: Record<string, unknown>, leadId: string) => {
   const apiKey = Deno.env.get("RESEND_API_KEY");
   const to = Deno.env.get("LEAD_NOTIFICATION_TO");
@@ -87,6 +101,8 @@ Deno.serve(async (request) => {
   const preferences = Array.isArray(payload.preferencias)
     ? payload.preferencias.map((item) => text(item, 100)).filter(Boolean).slice(0, 10)
     : text(payload.preferencias, 100) ? [text(payload.preferencias, 100)] : [];
+  const qualification = scoreCompanyLead(payload);
+  const protocol = `ASAS-${new Date().toISOString().slice(0,10).replaceAll("-", "")}-${crypto.randomUUID().slice(0,8).toUpperCase()}`;
   const record = {
     idempotency_key: text(payload.idempotency_key, 100),
     form_type: text(payload.form_type, 80) || "contato",
@@ -95,6 +111,21 @@ Deno.serve(async (request) => {
     phone: phone || null,
     interest: text(payload.interesse, 180) || null,
     organization: text(payload.empresa || payload.cnpj, 180) || null,
+    company_cnpj: text(payload.cnpj, 30) || null,
+    company_role: text(payload.cargo, 120) || null,
+    company_city: text(payload.cidade, 120) || null,
+    company_state: text(payload.estado, 2).toUpperCase() || null,
+    company_segment: text(payload.segmento, 160) || null,
+    company_size: text(payload.colaboradores, 30) || null,
+    cause_interest: text(payload.area_interesse, 180) || null,
+    support_type: text(payload.interesse, 180) || null,
+    investment_range: text(payload.faixa_apoio, 100) || null,
+    decision_deadline: text(payload.prazo, 80) || null,
+    project_interest: text(payload.projeto, 180) || null,
+    lead_score: qualification.score,
+    lead_classification: qualification.classification,
+    pipeline_stage: "novo_lead",
+    protocol,
     message: text(payload.mensagem, 4000) || null,
     preferences,
     consent: true,
@@ -123,5 +154,5 @@ Deno.serve(async (request) => {
       await supabase.from("asas_leads").update({ notification_status: "falhou", notification_error: "unexpected_notification_error" }).eq("id", inserted.id);
     }
   }
-  return Response.json({ ok: true }, { status: 201, headers: { ...cors, "Cache-Control": "no-store" } });
+  return Response.json({ ok: true, protocol }, { status: 201, headers: { ...cors, "Cache-Control": "no-store" } });
 });

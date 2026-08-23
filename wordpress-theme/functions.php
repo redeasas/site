@@ -90,6 +90,7 @@ function rede_asas_static_router(): void {
         '/apoie' => 'apoie.html',
         '/voluntariado' => 'voluntariado.html',
         '/empresas' => 'empresas.html',
+        '/investimento-social' => 'empresas.html',
         '/apoiador' => 'apoiador.html',
         '/confiar' => 'confiar.html',
         '/privacidade' => 'privacidade.html',

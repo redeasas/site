@@ -1,4 +1,9 @@
 (() => {
+  const sourcePolicy = Object.freeze({
+    allowed: ["site oficial", "repositório", "documento institucional", "integração oficial autorizada"],
+    instagram: "fonte complementar; nunca preenche campos operacionais, financeiros ou de impacto sem validação institucional",
+    missingLabel: "Informação em atualização",
+  });
   const projects = {
     "centro-infantil": { name:"Centro Infantil Caminho do Céu", category:"Educação", summary:"Educação infantil, alimentação, cuidado e desenvolvimento integral." },
     "faculdade-comunitaria": { name:"Faculdade Comunitária", category:"Educação", summary:"Formação acessível e incentivo ao crescimento educacional." },
@@ -15,6 +20,20 @@
     "familias-fortes": { name:"Famílias Fortes", category:"Famílias", summary:"Fortalecimento de vínculos, orientação e proteção social." },
     "viver-bem": { name:"Viver Bem", category:"Famílias", summary:"Cuidado, convivência e apoio para uma vida digna e saudável." }
   };
+  Object.values(projects).forEach((project) => {
+    project.validation = Object.freeze({
+      name: { status: "institutional", source: "Inventário institucional do site" },
+      category: { status: "institutional", source: "Organização editorial do site" },
+      summary: { status: "institutional", source: "Conteúdo institucional do repositório" },
+      audience: { status: "pending", value: null },
+      frequency: { status: "pending", value: null },
+      capacity: { status: "pending", value: null },
+      schedule: { status: "pending", value: null },
+      indicators: { status: "pending", value: null },
+      budget: { status: "pending", value: null },
+    });
+  });
+  window.ASAS_PROJECT_SOURCE_POLICY = sourcePolicy;
   window.ASAS_PROJECTS = projects;
   const slugByName = Object.fromEntries(Object.entries(projects).map(([slug,item]) => [item.name,slug]));
   document.querySelectorAll(".project-cards article").forEach((card) => {
