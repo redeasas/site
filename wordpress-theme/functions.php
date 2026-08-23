@@ -111,7 +111,7 @@ function rede_asas_static_router(): void {
         $relativePath = 'projeto.html';
     } elseif (preg_match('#^/([a-z0-9-]+)\.html$#', $requestPath, $match)) {
         $relativePath = $match[1] . '.html';
-    } elseif (preg_match('#^(assets/.+|styles\.css|script\.js|project-data\.js|site-config\.js|assistant\.css|stock\.css|building\.css|architecture\.css|pix\.css|robots\.txt|sitemap\.xml)$#', ltrim($requestPath, '/'), $match)) {
+    } elseif (preg_match('#^(assets/.+|styles\.css|script\.js|project-data\.js|obra-data\.js|site-config\.js|assistant\.css|stock\.css|building\.css|architecture\.css|pix\.css|robots\.txt|sitemap\.xml)$#', ltrim($requestPath, '/'), $match)) {
         $relativePath = $match[1];
     } else {
         return;
@@ -153,6 +153,7 @@ function rede_asas_static_router(): void {
                 'src="script.js"',
                 'src="site-config.js"',
                 'src="project-data.js"',
+                'src="obra-data.js"',
                 'href="assets/',
                 'src="assets/',
             ],
@@ -161,6 +162,7 @@ function rede_asas_static_router(): void {
                 'src="' . esc_url($assetBase . 'script.js?v=' . $scriptVersion) . '"',
                 'src="' . esc_url($assetBase . 'site-config.js?v=' . $configVersion) . '"',
                 'src="' . esc_url($assetBase . 'project-data.js?v=' . (string) filemtime($siteRoot . '/project-data.js')) . '"',
+                'src="' . esc_url($assetBase . 'obra-data.js?v=' . (string) filemtime($siteRoot . '/obra-data.js')) . '"',
                 'href="' . esc_url($assetBase . 'assets/') ,
                 'src="' . esc_url($assetBase . 'assets/') ,
             ],

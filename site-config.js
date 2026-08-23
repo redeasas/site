@@ -12,7 +12,7 @@ window.ASAS_CONFIG = Object.freeze({
     instagram: "https://www.instagram.com/redeasasbr/",
     facebook: null,
     foundedDate: null,
-    lastUpdated: "2026-08-11",
+    lastUpdated: "2026-08-23",
   },
   urls: {
     canonical: "https://redeasas.org.br",
@@ -63,6 +63,13 @@ window.ASAS_CONFIG = Object.freeze({
     goalConfirmed: false,
     reconciliationDate: null,
     currentStage: null,
+    officialControl: {
+      reviewedAt: "2026-08-23",
+      publicDataSource: "Controle_Oficial_Obra_Rede_ASAS_Brasil.xlsx — aba Site - Dados Públicos",
+      raisedStatus: "aguardando-conciliacao",
+      paidStatus: "aguardando-documentos-e-conciliacao",
+      physicalProgressStatus: "aguardando-medicao-tecnica",
+    },
   },
   transparencyDocuments: [],
   governance: { board: [], certifications: [], authorizedPartners: [], integrityChannel: null, childProtectionPolicy: null },
