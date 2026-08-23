@@ -1123,3 +1123,43 @@ p {
   .project-facts article:nth-child(even) { padding-left:0; border-left:0; }
 }
 @media (max-width: 500px) { .support-causes,.data-room-grid { grid-template-columns:1fr; } }
+
+.back-to-top {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 95;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  box-shadow: 0 12px 34px rgba(3,35,73,.28);
+  font: 800 1.55rem/1 var(--display);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 18px);
+  transition: opacity .22s ease, transform .22s ease, visibility .22s ease, background .22s ease;
+}
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  background: var(--blue);
+  outline: 3px solid var(--yellow);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top { transition: none; }
+}
+@media (max-width: 500px) {
+  .back-to-top { width: 48px; height: 48px; bottom: 18px; }
+}
