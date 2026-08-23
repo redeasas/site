@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Documento público — Rede ASAS Brasil",
+  "type": "object",
+  "required": ["id", "nome", "categoria", "ano", "data", "arquivo", "data_publicacao", "status"],
+  "properties": {
+    "id": { "type": "string" },
+    "nome": { "type": "string" },
+    "categoria": { "enum": ["Institucional", "Governança", "Financeiro", "Impacto", "Certificações", "Políticas", "Parcerias", "Novo prédio"] },
+    "ano": { "type": "integer" },
+    "data": { "type": "string", "format": "date" },
+    "arquivo": { "type": "string" },
+    "hash": { "type": ["string", "null"] },
+    "data_publicacao": { "type": ["string", "null"], "format": "date" },
+    "status": { "enum": ["rascunho", "em_revisao", "publicado", "arquivado"] }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Indicador de impacto — Rede ASAS Brasil",
+  "type": "object",
+  "required": ["id", "indicador", "categoria", "unidade", "periodo_inicio", "periodo_fim", "fonte", "metodologia", "responsavel", "data_validacao", "data_atualizacao", "status", "publicado"],
+  "properties": {
+    "id": { "type": "string" },
+    "indicador": { "type": "string" },
+    "categoria": { "enum": ["Educação", "Esporte", "Cultura", "Tecnologia", "Assistência Social", "Famílias", "Infraestrutura"] },
+    "valor": { "type": ["number", "null"] },
+    "unidade": { "enum": ["pessoas_unicas", "atendimentos", "participacoes", "matriculas", "familias", "vagas", "frequencia", "anos", "reais", "percentual"] },
+    "periodo_inicio": { "type": "string", "format": "date" },
+    "periodo_fim": { "type": "string", "format": "date" },
+    "fonte": { "type": "string" },
+    "metodologia": { "type": "string" },
+    "responsavel": { "type": "string" },
+    "data_validacao": { "type": ["string", "null"], "format": "date" },
+    "data_atualizacao": { "type": "string", "format": "date" },
+    "status": { "enum": ["rascunho", "aguardando_validacao", "validado", "arquivado"] },
+    "publicado": { "type": "boolean" }
+  }
+}
