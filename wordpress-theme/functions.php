@@ -93,6 +93,10 @@ function rede_asas_static_router(): void {
         '/apoiador' => 'apoiador.html',
         '/confiar' => 'confiar.html',
         '/privacidade' => 'privacidade.html',
+        '/transparencia' => 'transparencia.html',
+        '/relatorios' => 'relatorios.html',
+        '/governanca' => 'governanca.html',
+        '/integridade' => 'integridade.html',
     ];
 
     $normalized = rtrim($requestPath, '/');
@@ -137,6 +141,9 @@ function rede_asas_static_router(): void {
             $html = str_ireplace('</head>', '  ' . $verificationMeta . "\n</head>", $html);
         }
         $assetBase = trailingslashit(get_template_directory_uri()) . 'site/';
+        $stylesVersion = (string) filemtime($siteRoot . '/styles.css');
+        $scriptVersion = (string) filemtime($siteRoot . '/script.js');
+        $configVersion = (string) filemtime($siteRoot . '/site-config.js');
         $html = str_replace(
             [
                 'href="styles.css"',
@@ -146,9 +153,9 @@ function rede_asas_static_router(): void {
                 'src="assets/',
             ],
             [
-                'href="' . esc_url($assetBase . 'styles.css') . '"',
-                'src="' . esc_url($assetBase . 'script.js') . '"',
-                'src="' . esc_url($assetBase . 'site-config.js') . '"',
+                'href="' . esc_url($assetBase . 'styles.css?v=' . $stylesVersion) . '"',
+                'src="' . esc_url($assetBase . 'script.js?v=' . $scriptVersion) . '"',
+                'src="' . esc_url($assetBase . 'site-config.js?v=' . $configVersion) . '"',
                 'href="' . esc_url($assetBase . 'assets/') ,
                 'src="' . esc_url($assetBase . 'assets/') ,
             ],
