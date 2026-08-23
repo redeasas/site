@@ -7,7 +7,7 @@
   const navItems = [
     ["index.html", "Início"], ["quem-somos.html", "Quem somos"],
     ["projetos.html", "Projetos"], ["impacto.html", "Impacto"],
-    ["historias.html", "Histórias e conquistas"],
+    ["empresas.html", "Empresas"], ["transparencia.html", "Transparência"],
     ["novo-predio.html", "Novo prédio"], ["apoie.html", "Quero apoiar"],
   ];
 
@@ -44,7 +44,7 @@
   }
 
   const footer = document.querySelector("footer.footer");
-  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Participe</h3><a href="apoie.html">Quero apoiar</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a><a href="apoiador.html">Já sou apoiador</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
+  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Transparência</h3><a href="transparencia.html">Portal da Transparência</a><a href="relatorios.html">Relatórios</a><a href="governanca.html">Governança</a><a href="integridade.html">Integridade</a></div><div><h3>Participe</h3><a href="apoie.html">Quero apoiar</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
 
   const analyticsId = config.integrations?.analytics?.measurementId;
   const loadAnalytics = () => {
@@ -89,6 +89,14 @@
 
   document.querySelectorAll("img:not([loading])").forEach((img) => { if (!img.closest(".hero,.building-hero")) img.loading = "lazy"; img.decoding = "async"; });
   document.querySelectorAll(".project-cards article").forEach((card) => { const image = card.querySelector('img[alt=""]'); const title = card.querySelector("h3")?.textContent.trim(); if (image && title) image.alt = `Identidade visual do projeto ${title}`; });
+  const projectFilters = document.querySelector(".project-filters");
+  projectFilters?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-project-filter]"); if (!button) return;
+    const selected = button.dataset.projectFilter;
+    projectFilters.querySelectorAll("button").forEach((item) => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)); });
+    document.querySelectorAll("[data-project-group]").forEach((group) => { group.hidden = selected !== "todos" && group.dataset.projectGroup !== selected; });
+    track("project_filter", { category: selected });
+  });
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const revealItems = document.querySelectorAll(".reveal");
   if (!reducedMotion && "IntersectionObserver" in window) {
