@@ -9,7 +9,7 @@
   const navItems = [
     ["index.html", "Início"], ["quem-somos.html", "Quem somos"],
     ["projetos.html", "Projetos"], ["impacto.html", "Impacto"],
-    ["empresas.html", "Empresas"], ["transparencia.html", "Transparência"],
+    ["empresas.html", "Investimento social"], ["transparencia.html", "Transparência"],
     ["novo-predio.html", "Novo prédio"], ["apoie.html", "Quero apoiar"],
   ];
 
@@ -133,6 +133,36 @@
     if (status) status.textContent = "Não foi possível registrar automaticamente. Seu aplicativo de e-mail foi aberto como alternativa.";
     setTimeout(() => { form.dataset.submitting = "false"; }, 3000);
   };
+  document.querySelectorAll("[data-funnel]").forEach((form) => {
+    const steps = [...form.querySelectorAll("[data-funnel-step]")];
+    const back = form.querySelector("[data-funnel-back]");
+    const next = form.querySelector("[data-funnel-next]");
+    const submit = form.querySelector("[data-funnel-submit]");
+    const progress = form.querySelector("[data-funnel-progress]");
+    const bar = form.querySelector("[data-funnel-bar]");
+    let current = 0;
+    form.classList.add("funnel-ready");
+    const render = () => {
+      steps.forEach((step, index) => { step.hidden = index !== current; });
+      back.hidden = current === 0;
+      next.hidden = current === steps.length - 1;
+      submit.hidden = current !== steps.length - 1;
+      progress.textContent = `Etapa ${current + 1} de ${steps.length}`;
+      bar.style.width = `${((current + 1) / steps.length) * 100}%`;
+      steps[current].focus({ preventScroll: true });
+    };
+    const validStep = () => {
+      const fields = [...steps[current].querySelectorAll("input,select,textarea")];
+      const invalid = fields.find((field) => !field.checkValidity());
+      if (invalid) { invalid.reportValidity(); invalid.focus(); return false; }
+      return true;
+    };
+    next.addEventListener("click", () => { if (!validStep()) return; current += 1; render(); track("company_funnel_step", { step: current + 1 }); });
+    back.addEventListener("click", () => { current = Math.max(0, current - 1); render(); });
+    form.addEventListener("reset", () => { current = 0; setTimeout(render); });
+    form.addEventListener("focusin", () => { if (!form.dataset.funnelStarted) { form.dataset.funnelStarted = "true"; track("start_company_form"); } }, { once: true });
+    render();
+  });
   document.querySelectorAll("[data-lead-form],[data-contact-form]").forEach((form) => {
     form.dataset.startedAt = String(Date.now());
     form.addEventListener("submit", async (event) => {
@@ -164,9 +194,12 @@
     try {
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const result = await response.json().catch(() => ({}));
       form.reset();
       form.dataset.startedAt = String(Date.now());
-      if (status) status.textContent = "Contato recebido com segurança. A equipe da Rede ASAS retornará pelos dados informados.";
+      if (status) status.textContent = result.protocol
+        ? `Interesse recebido com segurança. Protocolo: ${result.protocol}. A equipe analisará o perfil antes de preparar qualquer proposta.`
+        : "Interesse recebido com segurança. A equipe analisará o perfil antes de preparar qualquer proposta.";
       track("lead_success", { lead_type: leadType });
       setTimeout(() => { form.dataset.submitting = "false"; }, 3000);
     } catch {

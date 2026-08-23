@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Parcerias empresariais | Rede ASAS Brasil</title>
+    <title>Investimento Social | Rede ASAS Brasil</title>
     <meta
       name="description"
       content="Conheça caminhos de parceria empresarial com a Rede ASAS Brasil no Taquaril, em Belo Horizonte."
@@ -15,8 +15,8 @@
     <header class="header"></header>
     <main id="conteudo">
       <section class="page-hero">
-        <p class="overline">Empresas parceiras</p>
-        <h1>Sua empresa pode transformar o território onde atua.</h1>
+        <p class="overline">Investimento social</p>
+        <h1>Investimento social que transforma territórios.</h1>
         <p>
           Construa uma parceria social mensurável, transparente e conectada a pessoas reais no Taquaril.
         </p>
@@ -24,7 +24,7 @@
       </section>
       <section class="content">
         <nav class="breadcrumb" aria-label="Navegação estrutural">
-          <a href="index.html">Início</a> → Empresas
+          <a href="index.html">Início</a> → Investimento Social
         </nav>
         <div class="service-grid">
           <article class="service-card">
@@ -72,14 +72,40 @@
         <div class="cta enterprise-cta"><div><p class="overline">Próximo passo</p><h2>Receba uma proposta compatível com sua empresa.</h2><p>O formulário registra o interesse com segurança e encaminha os dados para avaliação da equipe.</p></div><a class="button primary" href="#conversa">Iniciar conversa</a></div>
       </section>
       <section class="lead-section" id="conversa">
-        <p class="overline blue">Agende uma conversa</p>
-        <h2>Conte como sua empresa gostaria de participar.</h2>
+        <p class="overline blue">Perfil de parceria</p>
+        <h2>Monte uma possibilidade de investimento social.</h2>
+        <p>O formulário atual evoluiu para um funil único. Suas respostas seguem para o mesmo atendimento seguro da Rede ASAS.</p>
         <form
-          class="lead-form"
+          class="lead-form partnership-funnel"
           data-lead-form
+          data-funnel
           data-form-type="parceria-empresarial"
         >
-          <div class="form-grid">
+          <div class="funnel-progress" aria-label="Progresso do formulário"><span data-funnel-progress>Etapa 1 de 4</span><div><i data-funnel-bar></i></div></div>
+          <fieldset data-funnel-step>
+            <legend><span>1</span> Onde sua empresa quer gerar impacto?</legend>
+            <div class="choice-grid">
+              <label><input type="radio" name="area_interesse" value="Educação" required>Educação</label>
+              <label><input type="radio" name="area_interesse" value="Esporte">Esporte</label>
+              <label><input type="radio" name="area_interesse" value="Cultura">Cultura</label>
+              <label><input type="radio" name="area_interesse" value="Tecnologia">Tecnologia</label>
+              <label><input type="radio" name="area_interesse" value="Famílias">Famílias</label>
+              <label><input type="radio" name="area_interesse" value="Infraestrutura / novo prédio">Infraestrutura / novo prédio</label>
+              <label><input type="radio" name="area_interesse" value="Ainda não sei">Ainda não sei</label>
+            </div>
+          </fieldset>
+          <fieldset data-funnel-step>
+            <legend><span>2</span> Como gostaria de contribuir?</legend>
+            <div class="form-grid">
+              <label>Modelo de apoio<select name="interesse" required><option value="">Selecione</option><option>Apoio financeiro</option><option>Patrocínio de projeto</option><option>Doação de materiais ou equipamentos</option><option>Prestação de serviços</option><option>Voluntariado corporativo</option><option>Campanha com colaboradores</option><option>Apoio ao novo prédio</option><option>Outro</option></select></label>
+              <label>Faixa estimada<select name="faixa_apoio"><option value="">Prefiro não informar</option><option>Até R$ 5 mil</option><option>R$ 5 mil–R$ 10 mil</option><option>R$ 10 mil–R$ 25 mil</option><option>R$ 25 mil–R$ 50 mil</option><option>R$ 50 mil–R$ 100 mil</option><option>R$ 100 mil–R$ 250 mil</option><option>Acima de R$ 250 mil</option></select></label>
+              <label>Prazo<select name="prazo"><option value="">Selecione</option><option>Imediato</option><option>30 dias</option><option>90 dias</option><option>Este semestre</option><option>Este ano</option><option>Em planejamento</option></select></label>
+              <label>Projeto de interesse<input name="projeto" placeholder="Opcional; não precisa escolher agora"></label>
+            </div>
+          </fieldset>
+          <fieldset data-funnel-step>
+            <legend><span>3</span> Sobre a empresa</legend>
+            <div class="form-grid">
             <label
               >Nome completo<input
                 name="nome"
@@ -113,33 +139,17 @@
                 name="telefone"
                 autocomplete="tel"
                 required /></label
-            ><label
-              >Tipo de apoio<select name="interesse" required>
-                <option value="">Selecione</option>
-                <option>Apoio financeiro</option>
-                <option>Doação de materiais</option>
-                <option>Prestação de serviços</option>
-                <option>Apoio ao novo prédio</option>
-                <option>Voluntariado corporativo</option>
-                <option>Campanha com colaboradores</option>
-              </select></label
-            ><label>Projeto de interesse<input name="projeto" /></label
-            ><label>Prazo pretendido<select name="prazo"><option value="">Selecione</option><option>Até 3 meses</option><option>De 3 a 6 meses</option><option>De 6 a 12 meses</option><option>Acima de 12 meses</option><option>A definir</option></select></label
-            ><label>Faixa estimada (opcional)<select name="faixa_apoio"><option value="">Prefiro não informar</option><option>Até R$ 5 mil</option><option>De R$ 5 mil a R$ 20 mil</option><option>De R$ 20 mil a R$ 50 mil</option><option>Acima de R$ 50 mil</option><option>Materiais ou serviços</option></select></label>
+            ><label>Estado<input name="estado" maxlength="2" placeholder="MG" autocomplete="address-level1"></label
+            ><label>Número aproximado de colaboradores<input type="number" min="1" name="colaboradores"></label>
           </div>
-          <label>Mensagem<textarea name="mensagem" required></textarea></label
-          ><label class="honeypot"
-            >Não preencha<input
-              name="website"
-              tabindex="-1"
-              autocomplete="off" /></label
-          ><label class="consent"
-            ><input type="checkbox" name="consentimento" required /> Autorizo o
-            uso dos dados para resposta desta solicitação, conforme a
-            <a href="privacidade.html">Política de Privacidade</a>.</label
-          ><button class="button blue" type="submit">
-            Enviar contato
-          </button>
+          </fieldset>
+          <fieldset data-funnel-step>
+            <legend><span>4</span> Objetivo e contato</legend>
+            <label>O que sua empresa espera construir com esta parceria?<textarea name="mensagem" required></textarea></label>
+            <label class="honeypot">Não preencha<input name="website" tabindex="-1" autocomplete="off" /></label>
+            <label class="consent"><input type="checkbox" name="consentimento" required /> Autorizo o uso dos dados para resposta desta solicitação, conforme a <a href="privacidade.html">Política de Privacidade</a>.</label>
+          </fieldset>
+          <div class="funnel-actions"><button class="button outline" type="button" data-funnel-back>Voltar</button><button class="button blue" type="button" data-funnel-next>Continuar</button><button class="button blue" type="submit" data-funnel-submit>Receber proposta</button></div>
           <p class="form-status" data-form-status aria-live="polite"></p>
           <a
             class="text-link"

@@ -33,6 +33,19 @@
 .lead-form .consent input { width:auto; margin-top:4px; }
 .honeypot { position:absolute!important; left:-9999px!important; }
 .form-status { min-height:1.5em; color:#174f2f; font-weight:700; }
+.partnership-funnel fieldset { border:0; margin:0; padding:0; min-width:0; }
+.partnership-funnel fieldset:focus { outline:none; }
+.partnership-funnel legend { color:#123451; font-size:clamp(1.25rem,2vw,1.7rem); font-weight:850; margin-bottom:24px; }
+.partnership-funnel legend span { align-items:center; background:#0b4d78; border-radius:50%; color:#fff; display:inline-flex; height:36px; justify-content:center; margin-right:10px; width:36px; }
+.funnel-progress { color:#123451; font-size:.82rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+.funnel-progress div { background:#dbe6ee; border-radius:99px; height:8px; margin-top:9px; overflow:hidden; }
+.funnel-progress i { background:#e0a500; display:block; height:100%; transition:width .25s ease; width:25%; }
+.choice-grid { display:grid; gap:12px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.choice-grid label { align-items:center; border:1px solid #b9c9d5; border-radius:7px; cursor:pointer; display:flex; gap:10px; padding:16px; }
+.choice-grid input { width:auto; }
+.funnel-actions { display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; }
+.funnel-ready [data-funnel-step][hidden],.funnel-ready [data-funnel-back][hidden],.funnel-ready [data-funnel-next][hidden],.funnel-ready [data-funnel-submit][hidden] { display:none; }
+@media(max-width:700px){.choice-grid{grid-template-columns:1fr}.funnel-actions .button{flex:1}}
 .consent-banner { position:fixed; z-index:70; left:18px; right:18px; bottom:18px; margin:auto; max-width:980px; display:flex; align-items:center; justify-content:space-between; gap:24px; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 20px 60px rgba(3,31,64,.24); padding:18px 20px; }
 .consent-banner p { margin:0; font-size:.86rem; }
 .consent-banner div { display:flex; gap:10px; flex:0 0 auto; }
