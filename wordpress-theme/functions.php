@@ -97,6 +97,7 @@ function rede_asas_static_router(): void {
         '/relatorios' => 'relatorios.html',
         '/governanca' => 'governanca.html',
         '/integridade' => 'integridade.html',
+        '/visita' => 'visita.html',
     ];
 
     $normalized = rtrim($requestPath, '/');
@@ -106,9 +107,11 @@ function rede_asas_static_router(): void {
 
     if (isset($routes[$normalized])) {
         $relativePath = $routes[$normalized];
+    } elseif (preg_match('#^/projetos/([a-z0-9-]+)/?$#', $requestPath)) {
+        $relativePath = 'projeto.html';
     } elseif (preg_match('#^/([a-z0-9-]+)\.html$#', $requestPath, $match)) {
         $relativePath = $match[1] . '.html';
-    } elseif (preg_match('#^(assets/.+|styles\.css|script\.js|site-config\.js|assistant\.css|stock\.css|building\.css|architecture\.css|pix\.css|robots\.txt|sitemap\.xml)$#', ltrim($requestPath, '/'), $match)) {
+    } elseif (preg_match('#^(assets/.+|styles\.css|script\.js|project-data\.js|site-config\.js|assistant\.css|stock\.css|building\.css|architecture\.css|pix\.css|robots\.txt|sitemap\.xml)$#', ltrim($requestPath, '/'), $match)) {
         $relativePath = $match[1];
     } else {
         return;
@@ -121,9 +124,9 @@ function rede_asas_static_router(): void {
     if (!$candidate || !$realRoot || !str_starts_with($candidate, $realRoot . DIRECTORY_SEPARATOR) || !is_file($candidate)) {
         status_header(404);
         $candidate = $siteRoot . '/404.html';
+    } else {
+        status_header(200);
     }
-
-    status_header(200);
     $extension = strtolower(pathinfo($candidate, PATHINFO_EXTENSION));
     header('X-Content-Type-Options: nosniff');
     if ($extension === 'html') {
@@ -149,6 +152,7 @@ function rede_asas_static_router(): void {
                 'href="styles.css"',
                 'src="script.js"',
                 'src="site-config.js"',
+                'src="project-data.js"',
                 'href="assets/',
                 'src="assets/',
             ],
@@ -156,6 +160,7 @@ function rede_asas_static_router(): void {
                 'href="' . esc_url($assetBase . 'styles.css?v=' . $stylesVersion) . '"',
                 'src="' . esc_url($assetBase . 'script.js?v=' . $scriptVersion) . '"',
                 'src="' . esc_url($assetBase . 'site-config.js?v=' . $configVersion) . '"',
+                'src="' . esc_url($assetBase . 'project-data.js?v=' . (string) filemtime($siteRoot . '/project-data.js')) . '"',
                 'href="' . esc_url($assetBase . 'assets/') ,
                 'src="' . esc_url($assetBase . 'assets/') ,
             ],

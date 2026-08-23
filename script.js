@@ -3,7 +3,9 @@
   if (!config) return;
   const { organization: org, urls } = config;
   const page = location.pathname.split("/").pop() || "index.html";
-  const activePage = page === "noticias.html" ? "historias.html" : page;
+  const nestedProject = location.pathname.includes("/projetos/");
+  const rootPrefix = nestedProject ? "../../" : "";
+  const activePage = nestedProject ? "projetos.html" : page === "noticias.html" ? "historias.html" : page;
   const navItems = [
     ["index.html", "Início"], ["quem-somos.html", "Quem somos"],
     ["projetos.html", "Projetos"], ["impacto.html", "Impacto"],
@@ -13,7 +15,7 @@
 
   const header = document.querySelector("header.header");
   if (header) {
-    header.innerHTML = `<a class="brand" href="index.html" aria-label="Rede ASAS Brasil — início"><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="186" height="76"></a><button class="menu" type="button" data-menu-toggle aria-controls="main-nav" aria-label="Abrir menu" aria-expanded="false">Menu</button><nav id="main-nav" data-nav aria-label="Navegação principal">${navItems.map(([href,label]) => `<a href="${href}"${href === activePage ? ' class="active" aria-current="page"' : href === "apoie.html" ? ' class="nav-cta"' : ""}>${label}</a>`).join("")}</nav>`;
+    header.innerHTML = `<a class="brand" href="${rootPrefix}index.html" aria-label="Rede ASAS Brasil — início"><img src="${rootPrefix}assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="186" height="76"></a><button class="menu" type="button" data-menu-toggle aria-controls="main-nav" aria-label="Abrir menu" aria-expanded="false">Menu</button><nav id="main-nav" data-nav aria-label="Navegação principal">${navItems.map(([href,label]) => `<a href="${rootPrefix}${href}"${href === activePage ? ' class="active" aria-current="page"' : href === "apoie.html" ? ' class="nav-cta"' : ""}>${label}</a>`).join("")}</nav>`;
   }
 
   document.querySelectorAll(".utility").forEach((el) => {
@@ -21,7 +23,7 @@
   });
 
   const canonicalPage = page === "noticias.html" ? "historias.html" : page;
-  const canonicalPath = canonicalPage === "index.html" ? "/" : `/${canonicalPage.replace(".html", "")}`;
+  const canonicalPath = nestedProject ? location.pathname.replace(/\/$/, "") : canonicalPage === "index.html" ? "/" : `/${canonicalPage.replace(".html", "")}`;
   let canonical = document.querySelector('link[rel="canonical"]');
   if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
   canonical.href = `${urls.canonical}${canonicalPath}`;
@@ -44,7 +46,11 @@
   }
 
   const footer = document.querySelector("footer.footer");
-  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Transparência</h3><a href="transparencia.html">Portal da Transparência</a><a href="relatorios.html">Relatórios</a><a href="governanca.html">Governança</a><a href="integridade.html">Integridade</a></div><div><h3>Participe</h3><a href="apoie.html">Quero apoiar</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
+  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-principal-crop.jpeg" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Transparência</h3><a href="transparencia.html">Portal da Transparência</a><a href="relatorios.html">Relatórios</a><a href="governanca.html">Governança</a><a href="integridade.html">Integridade</a></div><div><h3>Participe</h3><a href="apoie.html">Quero apoiar</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a><a href="visita.html">Agendar visita</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
+  if (nestedProject && footer) {
+    footer.querySelector('img[src^="assets/"]')?.setAttribute("src", `${rootPrefix}assets/images/logo-rede-asas-principal-crop.jpeg`);
+    footer.querySelectorAll('a[href$=".html"]').forEach((link) => link.setAttribute("href", `${rootPrefix}${link.getAttribute("href")}`));
+  }
 
   const analyticsId = config.integrations?.analytics?.measurementId;
   const loadAnalytics = () => {
@@ -189,7 +195,7 @@
   options.addEventListener("click", (event) => {
     const button = event.target.closest("[data-help-topic]"); if (!button) return;
     const item = supportOptions[button.dataset.helpTopic]; if (!item) return;
-    const links = item.links.map(([href,label]) => `<a href="${href}">${label}<span>→</span></a>`).join("");
+    const links = item.links.map(([href,label]) => `<a href="${rootPrefix}${href}">${label}<span>→</span></a>`).join("");
     const whatsapp = `https://wa.me/${org.whatsappNumber}?text=${encodeURIComponent(item.whatsapp)}`;
     answer.hidden = false;
     answer.innerHTML = `<div class="help-message user">${item.label}</div><div class="help-message bot">${item.answer}</div><div class="help-actions">${links}<a class="help-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">Ainda preciso falar com a equipe</a><button type="button" data-help-back>Escolher outro assunto</button></div>`;
@@ -202,4 +208,10 @@
   panel.addEventListener("keydown", (event) => { if (event.key !== "Tab") return; const items = focusables(); const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } });
 
   document.querySelectorAll("[data-copy-pix]").forEach((button) => button.addEventListener("click", async () => { try { await navigator.clipboard.writeText(config.donation.pixKey.replace(/\D/g, "")); button.textContent = "Chave copiada!"; track("pix_copy"); setTimeout(() => button.textContent = "Copiar chave PIX", 2500); } catch { button.textContent = `PIX: ${config.donation.pixKey}`; } }));
+  document.querySelectorAll("[data-support-cause]").forEach((link) => link.addEventListener("click", () => {
+    const cause = link.dataset.supportCause;
+    const message = document.querySelector('#formulario textarea[name="mensagem"]');
+    if (message && !message.value) message.value = `Gostaria de apoiar a finalidade: ${cause}.`;
+    track("support_cause_selected", { cause });
+  }));
 })();
