@@ -240,6 +240,22 @@
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !panel.hidden) { setHelp(false); trigger.focus(); } });
   panel.addEventListener("keydown", (event) => { if (event.key !== "Tab") return; const items = focusables(); const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } });
 
+  const backToTop = document.createElement("button");
+  backToTop.className = "back-to-top";
+  backToTop.type = "button";
+  backToTop.setAttribute("aria-label", "Voltar ao início da página");
+  backToTop.setAttribute("title", "Voltar ao início");
+  backToTop.innerHTML = '<span aria-hidden="true">↑</span>';
+  document.body.appendChild(backToTop);
+  const updateBackToTop = () => backToTop.classList.toggle("is-visible", window.scrollY > 520);
+  window.addEventListener("scroll", updateBackToTop, { passive: true });
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    document.querySelector(".skip-link")?.focus({ preventScroll: true });
+    track("back_to_top_click");
+  });
+  updateBackToTop();
+
   document.querySelectorAll("[data-copy-pix]").forEach((button) => button.addEventListener("click", async () => { try { await navigator.clipboard.writeText(config.donation.pixKey.replace(/\D/g, "")); button.textContent = "Chave copiada!"; track("pix_copy"); setTimeout(() => button.textContent = "Copiar chave PIX", 2500); } catch { button.textContent = `PIX: ${config.donation.pixKey}`; } }));
   document.querySelectorAll("[data-support-cause]").forEach((link) => link.addEventListener("click", () => {
     const cause = link.dataset.supportCause;
