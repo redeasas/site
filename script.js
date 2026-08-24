@@ -2,7 +2,8 @@
   const config = window.ASAS_CONFIG;
   if (!config) return;
   const { organization: org, urls } = config;
-  const page = location.pathname.split("/").pop() || "index.html";
+  const pathPage = location.pathname.split("/").pop() || "index.html";
+  const page = pathPage.endsWith(".html") ? pathPage : `${pathPage}.html`;
   const nestedProject = location.pathname.includes("/projetos/");
   const rootPrefix = nestedProject ? "../../" : "";
   const activePage = nestedProject ? "projetos.html" : page === "noticias.html" ? "historias.html" : page;
@@ -31,7 +32,7 @@
   if (!document.querySelector('link[rel="apple-touch-icon"]')) { const icon = document.createElement("link"); icon.rel = "apple-touch-icon"; icon.href = "assets/images/logo-rede-asas-transparente.png"; document.head.appendChild(icon); }
   const metas = { "og:type": "website", "og:locale": "pt_BR", "og:site_name": org.publicName, "og:title": document.title, "og:description": document.querySelector('meta[name="description"]')?.content || "", "og:url": canonical.href, "og:image": socialImage, "twitter:card": "summary_large_image" };
   Object.entries(metas).forEach(([key, content]) => { let meta = document.querySelector(`meta[property="${key}"],meta[name="${key}"]`); if (!meta) { meta = document.createElement("meta"); meta.setAttribute(key.startsWith("twitter") ? "name" : "property", key); document.head.appendChild(meta); } meta.content = content; });
-  const graph = [{ "@type": "NGO", "@id": `${urls.canonical}/#organization`, name: org.publicName, legalName: org.legalName, url: urls.canonical, email: org.email, telephone: org.whatsappDisplay, taxID: org.cnpj, foundingDate: String(org.foundedYear), address: { "@type": "PostalAddress", streetAddress: "Rua Alair Pereira da Silva, 205", addressLocality: "Belo Horizonte", addressRegion: "MG", addressCountry: "BR" }, sameAs: [org.instagram] }, { "@type": "WebSite", "@id": `${urls.canonical}/#website`, url: `${urls.canonical}/`, name: org.publicName, publisher: { "@id": `${urls.canonical}/#organization` }, inLanguage: "pt-BR" }];
+  const graph = [{ "@type": "NGO", "@id": `${urls.canonical}/#organization`, name: org.publicName, alternateName: "Associação Shekinah de Assistência Social - ASAS", legalName: org.legalName, description: "Organização social com projetos de educação, esporte, cultura, tecnologia e fortalecimento familiar no Taquaril, em Belo Horizonte.", url: urls.canonical, email: org.email, telephone: org.whatsappDisplay, taxID: org.cnpj, foundingDate: String(org.foundedYear), areaServed: [{ "@type": "Place", name: "Taquaril, Belo Horizonte, Minas Gerais" }, { "@type": "City", name: "Belo Horizonte" }], address: { "@type": "PostalAddress", streetAddress: "Rua Alair Pereira da Silva, 205", addressLocality: "Belo Horizonte", addressRegion: "MG", postalCode: "30290-580", addressCountry: "BR" }, sameAs: [org.instagram] }, { "@type": "WebSite", "@id": `${urls.canonical}/#website`, url: `${urls.canonical}/`, name: org.publicName, publisher: { "@id": `${urls.canonical}/#organization` }, inLanguage: "pt-BR" }];
   if (page === "novo-predio.html") graph.push({ "@type": "FAQPage", mainEntity: [...document.querySelectorAll(".faq-list details")].map((item) => ({ "@type": "Question", name: item.querySelector("summary")?.textContent.trim(), acceptedAnswer: { "@type": "Answer", text: item.querySelector("p")?.textContent.trim() } })) });
   const schema = document.createElement("script"); schema.type = "application/ld+json"; schema.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph }); document.head.appendChild(schema);
 
