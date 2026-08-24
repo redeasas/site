@@ -71,6 +71,27 @@ function rede_asas_static_router(): void {
     $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
     $requestPath = rawurldecode($requestPath);
 
+    $legacyRoutes = [
+        '/centro-infantil-caminho-do-ceu' => '/projetos/centro-infantil',
+        '/rede-asas-brasil-noticias' => '/historias',
+        '/rede-asas-brasil-como-apoiar-apadrinhamento' => '/apoie',
+        '/viver-bem' => '/projetos/viver-bem',
+        '/rede-asas-brasil-contato' => '/apoie#formulario',
+        '/rede-asas-brasil-transparencia' => '/transparencia',
+    ];
+    $legacyNormalized = rtrim($requestPath, '/');
+    if (isset($legacyRoutes[$legacyNormalized])) {
+        wp_safe_redirect(home_url($legacyRoutes[$legacyNormalized]), 301, 'Rede ASAS legacy redirect');
+        exit;
+    }
+
+    // Redirect legacy file-style URLs to their single canonical address.
+    if (preg_match('#^/([a-z0-9-]+)\.html$#', $requestPath, $legacyMatch)) {
+        $canonicalPath = $legacyMatch[1] === 'index' ? '/' : '/' . $legacyMatch[1];
+        wp_safe_redirect(home_url($canonicalPath), 301, 'Rede ASAS canonical redirect');
+        exit;
+    }
+
     if (
         str_starts_with($requestPath, '/wp-admin') ||
         str_starts_with($requestPath, '/wp-login.php') ||
@@ -170,6 +191,14 @@ function rede_asas_static_router(): void {
                 'href="' . esc_url($assetBase . 'assets/') ,
                 'src="' . esc_url($assetBase . 'assets/') ,
             ],
+            $html
+        );
+        $html = preg_replace_callback(
+            '/href="([a-z0-9-]+)\.html(#[^"]*)?"/i',
+            static function (array $match): string {
+                $path = strtolower($match[1]) === 'index' ? '/' : '/' . $match[1];
+                return 'href="' . esc_url($path . ($match[2] ?? '')) . '"';
+            },
             $html
         );
         echo $html;
