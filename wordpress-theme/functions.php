@@ -85,6 +85,35 @@ function rede_asas_static_router(): void {
         exit;
     }
 
+    // These old placeholders have no verified equivalent. Return 410 so search
+    // engines can remove them while visitors still receive useful navigation.
+    if (in_array($legacyNormalized, ['/titulo-1', '/titulo-3'], true)) {
+        $siteRoot = get_template_directory() . '/site';
+        $candidate = $siteRoot . '/410.html';
+        if (is_file($candidate)) {
+            status_header(410);
+            header('Content-Type: text/html; charset=UTF-8');
+            header('Cache-Control: no-cache, must-revalidate');
+            header('X-Robots-Tag: noindex, follow');
+            header('X-Content-Type-Options: nosniff');
+            $html = file_get_contents($candidate);
+            $assetBase = trailingslashit(get_template_directory_uri()) . 'site/';
+            $html = str_replace(
+                ['href="styles.css"', 'src="script.js"', 'src="site-config.js"', 'href="assets/', 'src="assets/'],
+                [
+                    'href="' . esc_url($assetBase . 'styles.css?v=' . (string) filemtime($siteRoot . '/styles.css')) . '"',
+                    'src="' . esc_url($assetBase . 'script.js?v=' . (string) filemtime($siteRoot . '/script.js')) . '"',
+                    'src="' . esc_url($assetBase . 'site-config.js?v=' . (string) filemtime($siteRoot . '/site-config.js')) . '"',
+                    'href="' . esc_url($assetBase . 'assets/'),
+                    'src="' . esc_url($assetBase . 'assets/'),
+                ],
+                $html
+            );
+            echo $html;
+            exit;
+        }
+    }
+
     // Redirect legacy file-style URLs to their single canonical address.
     if (preg_match('#^/([a-z0-9-]+)\.html$#', $requestPath, $legacyMatch)) {
         $canonicalPath = $legacyMatch[1] === 'index' ? '/' : '/' . $legacyMatch[1];
