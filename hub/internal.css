@@ -61,6 +61,7 @@
 .hub-form-grid select{width:100%;border:1px solid #b8c8d8;border-radius:7px;padding:11px;background:#fff;font:inherit}
 .hub-form-grid textarea{min-height:110px;resize:vertical}
 .hub-form-grid input[type=checkbox]{width:20px;height:20px}
+.hub-form-grid fieldset{border:1px solid #b8c8d8;border-radius:7px;padding:12px}.hub-form-grid fieldset label{display:flex;align-items:center;gap:8px;margin-top:8px}
 .hub-form-status{min-height:20px;color:#9a3d00;font-weight:800}
 [data-workflow-panel] .hub-tr{grid-template-columns:2fr 1fr 1.4fr;min-width:560px}
 [data-workflow-panel] .hub-tr button{border:0;border-radius:6px;background:var(--hub);color:#fff;padding:8px 10px;font-weight:800;cursor:pointer}

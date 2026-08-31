@@ -13,14 +13,17 @@ Deno.serve(async request => {
   const admin = createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,{auth:{persistSession:false}});
   const {data:{user},error:userError} = await admin.auth.getUser(token);
   if (userError || !user) return Response.json({error:"unauthorized"},{status:401,headers:cors});
-  const {data:actor} = await admin.from("asas_staff_profiles").select("role,active").eq("user_id",user.id).maybeSingle();
-  if (!actor?.active || actor.role !== "admin") return Response.json({error:"forbidden"},{status:403,headers:cors});
+  const {data:actor} = await admin.from("asas_staff_profiles").select("role,roles,active").eq("user_id",user.id).maybeSingle();
+  if (!actor?.active || !(actor.roles || [actor.role]).includes("admin")) return Response.json({error:"forbidden"},{status:403,headers:cors});
   let body:Record<string,unknown>; try { body=await request.json(); } catch { return Response.json({error:"invalid_json"},{status:400,headers:cors}); }
-  const email=clean(body.email,180).toLowerCase(), displayName=clean(body.display_name,120), role=clean(body.role,30);
-  if (!email || !displayName || !["admin","financeiro","relacionamento","projetos","auditoria"].includes(role)) return Response.json({error:"invalid_fields"},{status:422,headers:cors});
+  const email=clean(body.email,180).toLowerCase(), displayName=clean(body.display_name,120);
+  const allowed=["admin","financeiro","relacionamento","projetos","auditoria"];
+  const roles=Array.isArray(body.roles) ? [...new Set(body.roles.map(value=>clean(value,30)))].filter(value=>allowed.includes(value)) : [clean(body.role,30)].filter(value=>allowed.includes(value));
+  const role=roles[0];
+  if (!email || !displayName || !roles.length) return Response.json({error:"invalid_fields"},{status:422,headers:cors});
   const {data:invite,error:inviteError} = await admin.auth.admin.inviteUserByEmail(email,{redirectTo:"https://redeasas.github.io/site/hub/login.html",data:{display_name:displayName}});
   if (inviteError || !invite.user) return Response.json({error:"invite_failed"},{status:409,headers:cors});
-  const {error:profileError} = await admin.from("asas_staff_profiles").upsert({user_id:invite.user.id,display_name:displayName,role,active:true,updated_at:new Date().toISOString()});
+  const {error:profileError} = await admin.from("asas_staff_profiles").upsert({user_id:invite.user.id,display_name:displayName,role,roles,active:true,updated_at:new Date().toISOString()});
   if (profileError) return Response.json({error:"profile_failed"},{status:500,headers:cors});
   return Response.json({ok:true},{status:201,headers:cors});
 });

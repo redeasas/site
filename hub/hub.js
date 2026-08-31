@@ -8,6 +8,8 @@
   const cards = (items) => `<section class="hub-kpis">${items.map(([a,b,c])=>`<article><small>${a}</small><strong>${b}</strong><span>${c}</span></article>`).join("")}</section>`;
   const emptyRows = (columns, rows=5) => `<div class="hub-table" role="table"><div class="hub-tr hub-th">${columns.map(x=>`<span>${x}</span>`).join("")}</div>${Array.from({length:rows},(_,i)=>`<div class="hub-tr"><span>Registro fictício ${i+1}</span>${columns.slice(1).map(()=>`<span>—</span>`).join("")}</div>`).join("")}</div>`;
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+  const profileRoles = authContext.demo ? [] : (authContext.profile.roles?.length ? authContext.profile.roles : [authContext.profile.role]);
+  const hasRole = roles => roles.some(role => profileRoles.includes(role));
   const screens = {
     mantenedor: `<div class="hub-profile"><div class="hub-avatar">EX</div><div><small>Mantenedor demonstrativo</small><h2>Pessoa Exemplo</h2><p>ASA #DEMO · Contato protegido · Belo Horizonte/MG</p></div><span class="hub-status">ATIVO — MOCK</span></div>${cards([["Contribuição mensal","R$ —","Gateway não conectado"],["Total contribuído","R$ —","Sem conciliação"],["Indicações","—","Sem dados reais"],["Origem","Demonstração","Não rastreada"]])}<div class="hub-tabs"><button class="active">Resumo</button><button>Pagamentos</button><button>Relacionamento</button><button>Indicações</button><button>Dados pessoais</button><button>Documentos</button></div><section class="hub-two"><article class="hub-panel"><h2>Histórico de pagamentos</h2>${emptyRows(["Competência","Valor","Status","Método"],4)}</article><article class="hub-panel"><h2>Resumo do relacionamento</h2><p class="hub-empty">Nenhuma interação real. Quando o backend estiver ativo, alterações sensíveis gerarão trilha de auditoria.</p><h3>Notas da equipe</h3><p>Campo demonstrativo com acesso condicionado ao perfil autorizado.</p></article></section>`,
     crm: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar contatos autorizados…"><button disabled>Filtros</button><button disabled>+ Novo lead</button></div><p class="hub-note">Dados reais protegidos por sessão, perfil de acesso e trilha de auditoria. Exibição limitada ao necessário para triagem.</p><div class="hub-kanban" data-kanban><p class="hub-empty">Carregando contatos com segurança…</p></div>`,
@@ -105,7 +107,7 @@
       ], transform:data=>({...data, owner_id:authContext.user.id}) }
     };
     const formConfig = formConfigs[view];
-    const canCreate = formConfig?.roles.includes(authContext.profile.role);
+    const canCreate = formConfig && hasRole(formConfig.roles);
     const response = await window.ASAS_AUTH.request(`/rest/v1/${module.table}?select=${module.select}&order=${module.order}&limit=200`, {}, token);
     const footer = document.querySelector(".hub-main > footer");
     document.querySelectorAll(".hub-main > header ~ section,.hub-main > header ~ article,.hub-main > header ~ .hub-profile,.hub-main > header ~ .hub-tabs").forEach(item => item.remove());
@@ -116,8 +118,8 @@
       const toolbar = canCreate ? `<div class="hub-toolbar"><button type="button" data-open-create>+ ${escapeHtml(formConfig.title)}</button></div>` : "";
       footer?.insertAdjacentHTML("beforebegin", `${toolbar}<article class="hub-panel"><h2>${labels[view]}</h2>${table}<p class="hub-note">Consulta limitada aos 200 registros mais recentes e protegida pelas permissões do seu perfil.</p></article>`);
       if (["impacto","ia"].includes(view) && rows.length) {
-        const isAdmin = authContext.profile.role === "admin";
-        const allowedToSubmit = view === "impacto" ? ["admin","projetos"].includes(authContext.profile.role) : ["admin","relacionamento","projetos"].includes(authContext.profile.role);
+        const isAdmin = hasRole(["admin"]);
+        const allowedToSubmit = view === "impacto" ? hasRole(["admin","projetos"]) : hasRole(["admin","relacionamento","projetos"]);
         const actionFor = row => {
           if (row.status === "rascunho" && allowedToSubmit) return ["em_validacao","Enviar para validação"];
           if (row.status === "em_validacao" && isAdmin) return ["aprovado","Aprovar"];
@@ -184,21 +186,22 @@
   if (!authContext.demo && view === "usuarios") {
     const token = window.ASAS_AUTH.readSession().access_token;
     const target = document.querySelector("[data-user-content]");
-    const response = await window.ASAS_AUTH.request("/rest/v1/asas_staff_profiles?select=user_id,display_name,role,active,created_at,updated_at&order=created_at.asc&limit=100",{},token);
+    const response = await window.ASAS_AUTH.request("/rest/v1/asas_staff_profiles?select=user_id,display_name,role,roles,active,created_at,updated_at&order=created_at.asc&limit=100",{},token);
     if (!response.ok) target.innerHTML = '<p class="hub-empty">Seu perfil não possui acesso à gestão de usuários.</p>';
     else {
       const rows = await response.json();
-      const invite = authContext.profile.role === "admin" ? '<button type="button" data-open-invite>+ Convidar usuário</button>' : "";
-      target.innerHTML = `<div class="hub-toolbar">${invite}</div><h2>Equipe autorizada</h2><p class="hub-note">Cada pessoa deve possuir conta individual. Nunca compartilhe acessos.</p><div class="hub-table"><div class="hub-tr hub-th"><span>Nome</span><span>Perfil</span><span>Status</span><span>Criado em</span><span>Atualizado em</span><span>Identificador</span></div>${rows.map(row=>`<div class="hub-tr"><span>${escapeHtml(row.display_name)}</span><span>${escapeHtml(row.role)}</span><span>${row.active?"Ativo":"Inativo"}</span><span>${new Date(row.created_at).toLocaleDateString("pt-BR")}</span><span>${new Date(row.updated_at).toLocaleDateString("pt-BR")}</span><span>${escapeHtml(row.user_id.slice(0,8))}…</span></div>`).join("")}</div>`;
-      if (authContext.profile.role === "admin") {
-        document.body.insertAdjacentHTML("beforeend", `<dialog class="hub-dialog" data-invite-dialog><form><header><h2>Convidar usuário</h2><button type="button" data-close-invite aria-label="Fechar">×</button></header><div class="hub-form-grid"><label>Nome completo<input name="display_name" required maxlength="120"></label><label>E-mail institucional<input type="email" name="email" required maxlength="180"></label><label>Perfil<select name="role" required><option value="relacionamento">Relacionamento</option><option value="projetos">Projetos</option><option value="financeiro">Financeiro</option><option value="auditoria">Leitura/Auditoria</option><option value="admin">Administrador</option></select></label></div><p class="hub-note">Ao confirmar, o Supabase enviará um convite ao e-mail informado.</p><p class="hub-form-status" aria-live="polite"></p><footer><button type="button" data-close-invite>Cancelar</button><button type="submit" data-send-invite>Enviar convite</button></footer></form></dialog>`);
+      const invite = hasRole(["admin"]) ? '<button type="button" data-open-invite>+ Convidar usuário</button>' : "";
+      target.innerHTML = `<div class="hub-toolbar">${invite}</div><h2>Equipe autorizada</h2><p class="hub-note">Cada pessoa deve possuir conta individual. Nunca compartilhe acessos.</p><div class="hub-table"><div class="hub-tr hub-th"><span>Nome</span><span>Perfis</span><span>Status</span><span>Criado em</span><span>Atualizado em</span><span>Identificador</span></div>${rows.map(row=>`<div class="hub-tr"><span>${escapeHtml(row.display_name)}</span><span>${escapeHtml((row.roles?.length?row.roles:[row.role]).join(", "))}</span><span>${row.active?"Ativo":"Inativo"}</span><span>${new Date(row.created_at).toLocaleDateString("pt-BR")}</span><span>${new Date(row.updated_at).toLocaleDateString("pt-BR")}</span><span>${escapeHtml(row.user_id.slice(0,8))}…</span></div>`).join("")}</div>`;
+      if (hasRole(["admin"])) {
+        document.body.insertAdjacentHTML("beforeend", `<dialog class="hub-dialog" data-invite-dialog><form><header><h2>Convidar usuário</h2><button type="button" data-close-invite aria-label="Fechar">×</button></header><div class="hub-form-grid"><label>Nome completo<input name="display_name" required maxlength="120"></label><label>E-mail institucional<input type="email" name="email" required maxlength="180"></label><fieldset><legend>Perfis de acesso</legend><label><input type="checkbox" name="roles" value="relacionamento"> Relacionamento</label><label><input type="checkbox" name="roles" value="financeiro"> Financeiro</label><label><input type="checkbox" name="roles" value="projetos"> Projetos</label><label><input type="checkbox" name="roles" value="auditoria"> Leitura/Auditoria</label><label><input type="checkbox" name="roles" value="admin"> Administrador</label></fieldset></div><p class="hub-note">Ao confirmar, o Supabase enviará um convite ao e-mail informado.</p><p class="hub-form-status" aria-live="polite"></p><footer><button type="button" data-close-invite>Cancelar</button><button type="submit" data-send-invite>Enviar convite</button></footer></form></dialog>`);
         const dialog = document.querySelector("[data-invite-dialog]");
         document.querySelector("[data-open-invite]").addEventListener("click",()=>dialog.showModal());
         dialog.querySelectorAll("[data-close-invite]").forEach(button=>button.addEventListener("click",()=>dialog.close()));
         dialog.querySelector("form").addEventListener("submit",async event=>{
           event.preventDefault();
           if (!confirm("Confirma o envio do convite institucional e a criação deste perfil de acesso?")) return;
-          const button = dialog.querySelector("[data-send-invite]"), status = dialog.querySelector(".hub-form-status"), data = Object.fromEntries(new FormData(event.currentTarget));
+          const button = dialog.querySelector("[data-send-invite]"), status = dialog.querySelector(".hub-form-status"), formData = new FormData(event.currentTarget), data = {display_name:formData.get("display_name"),email:formData.get("email"),roles:formData.getAll("roles")};
+          if (!data.roles.length) { status.textContent="Selecione pelo menos um perfil de acesso."; return; }
           button.disabled=true; status.textContent="Enviando convite…";
           const sent = await fetch("https://yljvlllrvibyongccgmz.supabase.co/functions/v1/staff-invite",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify(data)});
           if (sent.ok) location.reload(); else { status.textContent="Não foi possível enviar. Confira o e-mail, o perfil ou se a pessoa já possui acesso."; button.disabled=false; }
