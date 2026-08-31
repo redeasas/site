@@ -72,8 +72,8 @@
       financeiro: { table:"asas_payment_events", select:"occurred_at,event_type,status,amount,gateway_reference", order:"occurred_at.desc", columns:["Data","Evento","Status","Valor","Referência","Origem"], values:r=>[new Date(r.occurred_at).toLocaleDateString("pt-BR"),r.event_type,r.status,r.amount==null?"—":Number(r.amount).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}),r.gateway_reference||"—","Gateway"] },
       empresas: { table:"asas_organizations", select:"name,contact_name,interest,stage,next_action_at,updated_at", order:"updated_at.desc", columns:["Empresa","Contato","Interesse","Etapa","Próxima ação","Atualização"], values:r=>[r.name,r.contact_name||"—",r.interest||"—",r.stage,r.next_action_at?new Date(r.next_action_at).toLocaleDateString("pt-BR"):"—",new Date(r.updated_at).toLocaleDateString("pt-BR")] },
       voluntarios: { table:"asas_volunteers", select:"full_name,profession,availability,status,project_interest,updated_at", order:"updated_at.desc", columns:["Nome","Profissão","Disponibilidade","Status","Projeto","Atualização"], values:r=>[r.full_name,r.profession||"—",r.availability||"—",r.status,r.project_interest||"—",new Date(r.updated_at).toLocaleDateString("pt-BR")] },
-      impacto: { table:"asas_impact_indicators", select:"name,project,period_start,period_end,source,status", order:"period_end.desc", columns:["Indicador","Projeto","Início","Fim","Fonte","Status"], values:r=>[r.name,r.project,r.period_start,r.period_end,r.source,r.status] },
-      ia: { table:"asas_knowledge_entries", select:"title,category,status,source,updated_at,reviewed_at", order:"updated_at.desc", columns:["Título","Categoria","Status","Fonte","Atualização","Revisão"], values:r=>[r.title,r.category,r.status,r.source,new Date(r.updated_at).toLocaleDateString("pt-BR"),r.reviewed_at?new Date(r.reviewed_at).toLocaleDateString("pt-BR"):"—"] }
+      impacto: { table:"asas_impact_indicators", select:"id,name,project,period_start,period_end,source,status", order:"period_end.desc", columns:["Indicador","Projeto","Início","Fim","Fonte","Status"], values:r=>[r.name,r.project,r.period_start,r.period_end,r.source,r.status] },
+      ia: { table:"asas_knowledge_entries", select:"id,title,category,status,source,updated_at,reviewed_at", order:"updated_at.desc", columns:["Título","Categoria","Status","Fonte","Atualização","Revisão"], values:r=>[r.title,r.category,r.status,r.source,new Date(r.updated_at).toLocaleDateString("pt-BR"),r.reviewed_at?new Date(r.reviewed_at).toLocaleDateString("pt-BR"):"—"] }
     };
     const module = modules[view];
     const token = window.ASAS_AUTH.readSession().access_token;
@@ -99,10 +99,10 @@
         ["project","Projeto","text",true], ["name","Indicador","text",true], ["numeric_value","Valor numérico","number",false],
         ["text_value","Valor textual","text",false], ["period_start","Início do período","date",true], ["period_end","Fim do período","date",true],
         ["source","Fonte documental","text",true], ["methodology","Metodologia","textarea",true]
-      ], transform:data=>({...data, numeric_value:data.numeric_value?Number(data.numeric_value):null, owner_id:authContext.user.id, status:"rascunho"}) },
+      ], transform:data=>({...data, numeric_value:data.numeric_value?Number(data.numeric_value):null, owner_id:authContext.user.id}) },
       ia: { roles:["admin","relacionamento","projetos"], title:"Novo conteúdo interno", fields:[
         ["title","Título","text",true], ["category","Categoria","text",true], ["content","Conteúdo","textarea",true], ["source","Fonte documental","text",true]
-      ], transform:data=>({...data, owner_id:authContext.user.id, status:"rascunho"}) }
+      ], transform:data=>({...data, owner_id:authContext.user.id}) }
     };
     const formConfig = formConfigs[view];
     const canCreate = formConfig?.roles.includes(authContext.profile.role);
@@ -115,6 +115,34 @@
       const table = rows.length ? `<div class="hub-table" role="table"><div class="hub-tr hub-th">${module.columns.map(escapeHtml).map(x=>`<span>${x}</span>`).join("")}</div>${rows.map(row=>`<div class="hub-tr">${module.values(row).map(escapeHtml).map(x=>`<span>${x}</span>`).join("")}</div>`).join("")}</div>` : '<p class="hub-empty">Nenhum registro validado neste módulo.</p>';
       const toolbar = canCreate ? `<div class="hub-toolbar"><button type="button" data-open-create>+ ${escapeHtml(formConfig.title)}</button></div>` : "";
       footer?.insertAdjacentHTML("beforebegin", `${toolbar}<article class="hub-panel"><h2>${labels[view]}</h2>${table}<p class="hub-note">Consulta limitada aos 200 registros mais recentes e protegida pelas permissões do seu perfil.</p></article>`);
+      if (["impacto","ia"].includes(view) && rows.length) {
+        const isAdmin = authContext.profile.role === "admin";
+        const allowedToSubmit = view === "impacto" ? ["admin","projetos"].includes(authContext.profile.role) : ["admin","relacionamento","projetos"].includes(authContext.profile.role);
+        const actionFor = row => {
+          if (row.status === "rascunho" && allowedToSubmit) return ["em_validacao","Enviar para validação"];
+          if (row.status === "em_validacao" && isAdmin) return ["aprovado","Aprovar"];
+          if (row.status === "aprovado" && isAdmin) return ["publicado","Publicar"];
+          return null;
+        };
+        const workflowRows = rows.map(row => {
+          const action = actionFor(row);
+          const title = view === "impacto" ? row.name : row.title;
+          return `<div class="hub-tr"><span>${escapeHtml(title)}</span><span>${escapeHtml(row.status.replaceAll("_"," "))}</span><span>${action ? `<button type="button" data-workflow-id="${escapeHtml(row.id)}" data-workflow-target="${action[0]}">${action[1]}</button>` : "Aguardando etapa ou permissão"}</span></div>`;
+        }).join("");
+        footer?.insertAdjacentHTML("beforebegin", `<article class="hub-panel" data-workflow-panel><h2>Fluxo de validação e publicação</h2><p class="hub-note">Rascunhos nunca aparecem no site público. Aprovação e publicação exigem perfil Administrador e ficam registradas na auditoria.</p><div class="hub-table"><div class="hub-tr hub-th"><span>Registro</span><span>Etapa atual</span><span>Ação permitida</span></div>${workflowRows}</div><p class="hub-form-status" data-workflow-status aria-live="polite"></p></article>`);
+        document.querySelector("[data-workflow-panel]")?.addEventListener("click", async event => {
+          const button = event.target.closest("[data-workflow-id]");
+          if (!button) return;
+          const status = document.querySelector("[data-workflow-status]");
+          const verb = button.textContent.trim().toLowerCase();
+          if (!confirm(`Confirma ${verb} este registro? A ação será auditada.`)) return;
+          button.disabled = true; status.textContent = "Registrando transição…";
+          const rpc = view === "impacto" ? "asas_transition_impact" : "asas_transition_knowledge";
+          const transitioned = await window.ASAS_AUTH.request(`/rest/v1/rpc/${rpc}`, { method:"POST", body:JSON.stringify({ p_record_id:button.dataset.workflowId, p_target_status:button.dataset.workflowTarget }) }, token);
+          if (transitioned.ok) location.reload();
+          else { status.textContent = "A transição não foi autorizada. Verifique a etapa e seu perfil."; button.disabled = false; }
+        });
+      }
       if (canCreate) {
         const fields = formConfig.fields.map(([name,label,type,required]) => `<label>${escapeHtml(label)}${type === "textarea" ? `<textarea name="${name}" ${required?"required":""}></textarea>` : type === "checkbox" ? `<input name="${name}" type="checkbox" ${required?"required":""}>` : `<input name="${name}" type="${type}" ${type==="number"?'min="0" step="0.01"':""} ${name==="state"?'maxlength="2"':""} ${required?"required":""}>`}</label>`).join("");
         document.body.insertAdjacentHTML("beforeend", `<dialog class="hub-dialog" data-create-dialog><form method="dialog"><header><h2>${escapeHtml(formConfig.title)}</h2><button value="cancel" aria-label="Fechar">×</button></header><div class="hub-form-grid">${fields}</div><p class="hub-note">Cadastre somente dados documentados e necessários para a finalidade institucional.</p><p class="hub-form-status" aria-live="polite"></p><footer><button value="cancel">Cancelar</button><button type="submit" data-confirm-create>Salvar cadastro</button></footer></form></dialog>`);
