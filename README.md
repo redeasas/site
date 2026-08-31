@@ -1,6 +1,6 @@
-# Landing page REDE ASAS BRASIL
+# Ecossistema digital Rede ASAS Brasil
 
-Landing page institucional estática para apresentação da REDE ASAS BRASIL a empresas, parceiros, pessoas físicas, apoiadores e doadores.
+Site institucional, campanha 1.000 ASAS e protótipos de validação do ASAS HUB.
 
 ## Arquivos
 
@@ -11,6 +11,13 @@ Landing page institucional estática para apresentação da REDE ASAS BRASIL a e
 - `docs/OPERACAO_DO_SITE.md`: rotina interna de atendimento, segurança e manutenção.
 - `dados-internos/`: modelos para validar impacto, obra e transparência antes da publicação.
 - `assets/images/`: imagens, logos dos projetos e QR Code PIX.
+- `asas-hub.html`: dashboard demonstrativo do ASAS HUB.
+- `hub/`: telas internas demonstrativas (ficha 360°, CRM, financeiro, empresas, voluntários, impacto e IA).
+- `minha-asa.html`: protótipo separado do portal privado do mantenedor.
+
+## Segurança dos protótipos
+
+As telas do ASAS HUB estão marcadas com `noindex,nofollow` e exibem somente dados fictícios. Elas não autenticam usuários, não realizam cobranças, não enviam mensagens e não substituem o backend com RBAC, trilha de auditoria e webhooks. Nenhuma tela interna deve ser usada operacionalmente antes dessas integrações e de uma revisão de segurança/LGPD.
 
 ## Doação
 
