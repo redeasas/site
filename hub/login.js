@@ -5,7 +5,23 @@
   const query = new URLSearchParams(location.search);
   if (query.has("expired")) status.textContent = "Sua sessão expirou. Entre novamente.";
   if (query.has("denied")) status.textContent = "Esta conta ainda não possui acesso ativo ao ASAS HUB.";
-  if (window.ASAS_AUTH.readSession()?.access_token) location.replace(query.get("return") || "../asas-hub.html");
+  const existing = window.ASAS_AUTH.readSession();
+  if (existing?.access_token && existing.setup_required) {
+    document.querySelector("h1").textContent = "Defina sua senha";
+    document.querySelector("main > p:not(.eyebrow)").textContent = "Crie uma senha exclusiva com pelo menos 10 caracteres para concluir a ativação.";
+    form.innerHTML = '<label>Nova senha<input type="password" name="password" autocomplete="new-password" minlength="10" required></label><label>Confirme a senha<input type="password" name="confirmation" autocomplete="new-password" minlength="10" required></label><button type="submit">Ativar meu acesso</button><p data-status aria-live="polite"></p>';
+    const setupStatus = form.querySelector("[data-status]");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault(); const data = new FormData(form);
+      if (data.get("password") !== data.get("confirmation")) { setupStatus.textContent = "As senhas precisam ser iguais."; return; }
+      setupStatus.textContent = "Ativando acesso…";
+      const response = await window.ASAS_AUTH.request("/auth/v1/user", { method:"PUT", body:JSON.stringify({ password:data.get("password") }) }, existing.access_token);
+      if (!response.ok) { setupStatus.textContent = "Não foi possível ativar. Solicite um novo convite."; return; }
+      existing.setup_required = false; window.ASAS_AUTH.saveSession(existing); location.replace(query.get("return") || "../asas-hub.html");
+    });
+    return;
+  }
+  if (existing?.access_token) location.replace(query.get("return") || "../asas-hub.html");
   form.addEventListener("submit", async (event) => {
     event.preventDefault(); status.textContent = "Verificando acesso…";
     const data = new FormData(form);

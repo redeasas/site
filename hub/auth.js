@@ -13,13 +13,13 @@
 
   window.ASAS_AUTH = { projectUrl, anonKey, readSession, saveSession, clearSession, request };
   window.ASAS_AUTH_READY = (async () => {
-    if (location.pathname.endsWith("/hub/login.html")) { document.documentElement.classList.remove("auth-pending"); return { login: true }; }
-    if (localDemo) { document.documentElement.classList.remove("auth-pending"); return { demo: true }; }
     const hash = new URLSearchParams(location.hash.replace(/^#/, ""));
     if (hash.get("access_token")) {
-      saveSession({ access_token: hash.get("access_token"), refresh_token: hash.get("refresh_token"), expires_at: Math.floor(Date.now()/1000) + Number(hash.get("expires_in") || 3600) });
+      saveSession({ access_token: hash.get("access_token"), refresh_token: hash.get("refresh_token"), expires_at: Math.floor(Date.now()/1000) + Number(hash.get("expires_in") || 3600), setup_required: ["invite","recovery"].includes(hash.get("type")) });
       history.replaceState(null, "", location.pathname + location.search);
     }
+    if (location.pathname.endsWith("/hub/login.html")) { document.documentElement.classList.remove("auth-pending"); return { login: true }; }
+    if (localDemo) { document.documentElement.classList.remove("auth-pending"); return { demo: true }; }
     const session = readSession();
     if (!session?.access_token) { location.replace(`${basePath}?return=${encodeURIComponent(location.pathname)}`); return new Promise(() => {}); }
     const userResponse = await request("/auth/v1/user", {}, session.access_token);
