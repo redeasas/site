@@ -48,7 +48,7 @@
     if (!userResponse.ok) { clearSession(); location.replace(`${basePath}?expired=1&return=${encodeURIComponent(location.pathname)}`); return new Promise(() => {}); }
     const user = await userResponse.json();
     const activeSession = readSession();
-    const profileResponse = await request(`/rest/v1/asas_staff_profiles?user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=user_id,display_name,role,active`, {}, activeSession.access_token);
+    const profileResponse = await request(`/rest/v1/asas_staff_profiles?user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=user_id,display_name,role,roles,active`, {}, activeSession.access_token);
     const profiles = profileResponse.ok ? await profileResponse.json() : [];
     if (!profiles.length) { clearSession(); location.replace(`${basePath}?denied=1`); return new Promise(() => {}); }
     document.documentElement.classList.remove("auth-pending");
