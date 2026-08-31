@@ -74,6 +74,19 @@ window.ASAS_CONFIG = Object.freeze({
   transparencyDocuments: [],
   governance: { board: [], certifications: [], authorizedPartners: [], integrityChannel: null, childProtectionPolicy: null },
   contribution: { totalInvested: null, balance: null, recurringAvailable: false, cardsAvailable: false, boletoAvailable: false, receiptAutomationAvailable: false },
+  campaigns: {
+    oneThousandAsas: {
+      slug: "1000-asas",
+      targetSupporters: 1000,
+      activeSupporters: null,
+      publicCounterStatus: "awaiting-reconciled-data",
+      minimumSuggestedMonthlyAmount: 10,
+      paymentStatus: "interest-registration-only",
+      fundPurpose: "Continuidade da creche e dos projetos sociais da Rede ASAS Brasil",
+      separateFromBuildingCampaign: true,
+      updatedAt: "2026-08-31",
+    },
+  },
   integrations: {
     crm: null,
     newsletter: null,

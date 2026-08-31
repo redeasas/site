@@ -10,13 +10,13 @@
   const navItems = [
     ["index.html", "Início"], ["quem-somos.html", "Quem somos"],
     ["projetos.html", "Projetos"], ["impacto.html", "Impacto"],
-    ["empresas.html", "Investimento social"], ["transparencia.html", "Transparência"],
-    ["novo-predio.html", "Novo prédio"], ["apoie.html", "Quero apoiar"],
+    ["historias.html", "Histórias"], ["novo-predio.html", "Novo prédio"],
+    ["transparencia.html", "Transparência"], ["1000-asas.html", "1.000 ASAS"],
   ];
 
   const header = document.querySelector("header.header");
   if (header) {
-    header.innerHTML = `<a class="brand" href="${rootPrefix}index.html" aria-label="Rede ASAS Brasil — início"><img src="${rootPrefix}assets/images/logo-rede-asas-transparente.png" alt="Rede ASAS Brasil" width="186" height="76"></a><button class="menu" type="button" data-menu-toggle aria-controls="main-nav" aria-label="Abrir menu" aria-expanded="false">Menu</button><nav id="main-nav" data-nav aria-label="Navegação principal">${navItems.map(([href,label]) => `<a href="${rootPrefix}${href}"${href === activePage ? ' class="active" aria-current="page"' : href === "apoie.html" ? ' class="nav-cta"' : ""}>${label}</a>`).join("")}</nav>`;
+    header.innerHTML = `<a class="brand" href="${rootPrefix}index.html" aria-label="Rede ASAS Brasil — início"><img src="${rootPrefix}assets/images/logo-rede-asas-transparente.png" alt="Rede ASAS Brasil" width="186" height="76"></a><button class="menu" type="button" data-menu-toggle aria-controls="main-nav" aria-label="Abrir menu" aria-expanded="false">Menu</button><nav id="main-nav" data-nav aria-label="Navegação principal">${navItems.map(([href,label]) => `<a href="${rootPrefix}${href}"${href === activePage ? ' class="active" aria-current="page"' : href === "1000-asas.html" ? ' class="nav-cta"' : ""}>${label}</a>`).join("")}</nav>`;
   }
 
   document.querySelectorAll(".utility").forEach((el) => {
@@ -33,7 +33,7 @@
   const metas = { "og:type": "website", "og:locale": "pt_BR", "og:site_name": org.publicName, "og:title": document.title, "og:description": document.querySelector('meta[name="description"]')?.content || "", "og:url": canonical.href, "og:image": socialImage, "twitter:card": "summary_large_image" };
   Object.entries(metas).forEach(([key, content]) => { let meta = document.querySelector(`meta[property="${key}"],meta[name="${key}"]`); if (!meta) { meta = document.createElement("meta"); meta.setAttribute(key.startsWith("twitter") ? "name" : "property", key); document.head.appendChild(meta); } meta.content = content; });
   const graph = [{ "@type": "NGO", "@id": `${urls.canonical}/#organization`, name: org.publicName, alternateName: "Associação Shekinah de Assistência Social - ASAS", legalName: org.legalName, description: "Organização social com projetos de educação, esporte, cultura, tecnologia e fortalecimento familiar no Taquaril, em Belo Horizonte.", url: urls.canonical, email: org.email, telephone: org.whatsappDisplay, taxID: org.cnpj, foundingDate: String(org.foundedYear), areaServed: [{ "@type": "Place", name: "Taquaril, Belo Horizonte, Minas Gerais" }, { "@type": "City", name: "Belo Horizonte" }], address: { "@type": "PostalAddress", streetAddress: "Rua Alair Pereira da Silva, 205", addressLocality: "Belo Horizonte", addressRegion: "MG", postalCode: "30290-580", addressCountry: "BR" }, sameAs: [org.instagram] }, { "@type": "WebSite", "@id": `${urls.canonical}/#website`, url: `${urls.canonical}/`, name: org.publicName, publisher: { "@id": `${urls.canonical}/#organization` }, inLanguage: "pt-BR" }];
-  if (page === "novo-predio.html") graph.push({ "@type": "FAQPage", mainEntity: [...document.querySelectorAll(".faq-list details")].map((item) => ({ "@type": "Question", name: item.querySelector("summary")?.textContent.trim(), acceptedAnswer: { "@type": "Answer", text: item.querySelector("p")?.textContent.trim() } })) });
+  if (["novo-predio.html", "1000-asas.html"].includes(page)) graph.push({ "@type": "FAQPage", mainEntity: [...document.querySelectorAll(".faq-list details")].map((item) => ({ "@type": "Question", name: item.querySelector("summary")?.textContent.trim(), acceptedAnswer: { "@type": "Answer", text: item.querySelector("p")?.textContent.trim() } })) });
   const schema = document.createElement("script"); schema.type = "application/ld+json"; schema.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph }); document.head.appendChild(schema);
 
   if (page === "novo-predio.html") {
@@ -47,7 +47,7 @@
   }
 
   const footer = document.querySelector("footer.footer");
-  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-transparente.png" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Transparência</h3><a href="transparencia.html">Portal da Transparência</a><a href="relatorios.html">Relatórios</a><a href="governanca.html">Governança</a><a href="integridade.html">Integridade</a></div><div><h3>Participe</h3><a href="apoie.html">Quero apoiar</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a><a href="visita.html">Agendar visita</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
+  if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-transparente.png" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Transparência</h3><a href="transparencia.html">Portal da Transparência</a><a href="relatorios.html">Relatórios</a><a href="governanca.html">Governança</a><a href="integridade.html">Integridade</a></div><div><h3>Participe</h3><a href="1000-asas.html">1.000 ASAS</a><a href="apoie.html">Outras formas de apoio</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a><a href="visita.html">Agendar visita</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
   if (nestedProject && footer) {
     footer.querySelector('img[src^="assets/"]')?.setAttribute("src", `${rootPrefix}assets/images/logo-rede-asas-transparente.png`);
     footer.querySelectorAll('a[href$=".html"]').forEach((link) => link.setAttribute("href", `${rootPrefix}${link.getAttribute("href")}`));
@@ -198,10 +198,16 @@
       const result = await response.json().catch(() => ({}));
       form.reset();
       form.dataset.startedAt = String(Date.now());
+      const campaignInterest = form.dataset.formType === "1000-asas-interesse";
       if (status) status.textContent = result.protocol
-        ? `Interesse recebido com segurança. Protocolo: ${result.protocol}. A equipe analisará o perfil antes de preparar qualquer proposta.`
-        : "Interesse recebido com segurança. A equipe analisará o perfil antes de preparar qualquer proposta.";
+        ? campaignInterest
+          ? `Interesse registrado com segurança. Protocolo: ${result.protocol}. Nenhuma cobrança foi criada; a equipe informará quando a adesão recorrente estiver disponível.`
+          : `Interesse recebido com segurança. Protocolo: ${result.protocol}. A equipe analisará o perfil antes de preparar qualquer proposta.`
+        : campaignInterest
+          ? "Interesse registrado com segurança. Nenhuma cobrança foi criada."
+          : "Interesse recebido com segurança. A equipe analisará o perfil antes de preparar qualquer proposta.";
       track("lead_success", { lead_type: leadType });
+      if (campaignInterest) track("1000_asas_interest_success", { value: payload.valor_mensal || payload.valor_mensal_selecao || "não informado" });
       setTimeout(() => { form.dataset.submitting = "false"; }, 3000);
     } catch {
       track("form_error", { lead_type: leadType });
@@ -212,14 +218,23 @@
   const helpWidget = document.createElement("aside");
   helpWidget.className = "help-widget";
   const supportOptions = {
-    doar: { label: "Quero doar", answer: "Você pode apoiar por PIX, pela campanha do novo prédio ou conversar sobre uma contribuição recorrente.", links: [["apoie.html", "Ver formas de doação"], ["novo-predio.html#como-apoiar", "Apoiar o novo prédio"]], whatsapp: "Olá! O assistente do site me orientou sobre doações e preciso falar com a equipe." },
+    doar: { label: "Quero ajudar", answer: "Você pode conhecer a Campanha 1.000 ASAS, fazer uma doação única, apoiar o novo prédio ou encontrar outra forma de participar.", links: [["1000-asas.html", "Conhecer a Campanha 1.000 ASAS"], ["apoie.html", "Ver outras formas de apoio"]], whatsapp: "Olá! A assistente virtual do site me orientou sobre formas de apoio e preciso falar com a equipe." },
     predio: { label: "Novo prédio", answer: "O projeto possui estimativa preliminar de julho de 2026 e projeto estrutural emitido em 14/07/2026. Arrecadação e cronograma seguem sem conciliação pública.", links: [["novo-predio.html", "Acompanhar o projeto"]], whatsapp: "Olá! O assistente do site me orientou sobre o novo prédio e preciso de atendimento." },
     projetos: { label: "Conhecer projetos", answer: "A Rede ASAS atua com educação, esporte, cultura, tecnologia e fortalecimento familiar no Taquaril.", links: [["projetos.html", "Conhecer os projetos"]], whatsapp: "Olá! Gostaria de orientação da equipe sobre os projetos da Rede ASAS." },
     empresas: { label: "Parceria empresarial", answer: "Empresas podem apoiar financeiramente, doar materiais ou serviços e construir parcerias institucionais.", links: [["empresas.html", "Ver opções para empresas"]], whatsapp: "Olá! O assistente do site me orientou sobre parceria empresarial e quero falar com a equipe." },
     voluntariado: { label: "Voluntariado", answer: "O cadastro de interesse reúne seus dados e a equipe avalia oportunidades conforme as necessidades dos projetos.", links: [["voluntariado.html", "Cadastrar interesse"]], whatsapp: "Olá! O assistente do site me orientou sobre voluntariado e preciso falar com a equipe." },
     contato: { label: "Outro assunto", answer: "Posso encaminhar você para o WhatsApp oficial da Rede ASAS. Informe no início da mensagem o assunto e como prefere receber retorno.", links: [], whatsapp: "Olá! Vim pelo assistente do site da Rede ASAS Brasil e preciso de atendimento." },
   };
-  helpWidget.innerHTML = `<button class="help-trigger" type="button" aria-expanded="false" aria-controls="help-panel"><span class="help-dot" aria-hidden="true"></span>Posso ajudar?</button><div class="help-panel" id="help-panel" hidden role="dialog" aria-modal="false" aria-labelledby="help-title"><button class="help-close" type="button" aria-label="Fechar atendimento">×</button><div class="help-chat" aria-live="polite"><p class="help-greeting">Assistente virtual da Rede ASAS</p><h2 id="help-title">Como posso ajudar?</h2><div class="help-message bot">Escolha um assunto. Vou orientar você aqui e só encaminharei ao WhatsApp se for necessário.</div><div class="help-options">${Object.entries(supportOptions).map(([key,item]) => `<button type="button" data-help-topic="${key}">${item.label}<span>→</span></button>`).join("")}</div><div class="help-answer" data-help-answer hidden></div></div><small>Atendimento automatizado com informações públicas do site.</small></div>`;
+  const helpContext = page === "1000-asas.html"
+    ? "Posso explicar como funciona a Campanha 1.000 ASAS ou ajudar você a encontrar outra forma de participar."
+    : page === "projetos.html" || nestedProject
+      ? "Posso ajudar você a conhecer melhor os projetos da Rede ASAS."
+      : page === "transparencia.html"
+        ? "Está procurando algum documento ou informação institucional específica?"
+        : page === "novo-predio.html"
+          ? "Posso explicar o projeto do novo prédio e as formas responsáveis de apoiar."
+          : "Posso apresentar nosso trabalho ou ajudar você a encontrar uma maneira de fazer parte dele.";
+  helpWidget.innerHTML = `<button class="help-trigger" type="button" aria-expanded="false" aria-controls="help-panel"><span class="help-dot" aria-hidden="true"></span>Posso ajudar?</button><div class="help-panel" id="help-panel" hidden role="dialog" aria-modal="false" aria-labelledby="help-title"><button class="help-close" type="button" aria-label="Fechar atendimento">×</button><div class="help-chat" aria-live="polite"><p class="help-greeting">IA ASAS · Assistente virtual da Rede ASAS</p><h2 id="help-title">Como posso ajudar?</h2><div class="help-message bot">${helpContext}</div><div class="help-options">${Object.entries(supportOptions).map(([key,item]) => `<button type="button" data-help-topic="${key}">${item.label}<span>→</span></button>`).join("")}</div><div class="help-answer" data-help-answer hidden></div></div><small>Atendimento automatizado com informações públicas aprovadas.</small></div>`;
   document.body.appendChild(helpWidget);
   const trigger = helpWidget.querySelector(".help-trigger"), panel = helpWidget.querySelector(".help-panel"), closer = helpWidget.querySelector(".help-close");
   const focusables = () => [...panel.querySelectorAll('button,a[href]')];
@@ -240,6 +255,22 @@
   answer.addEventListener("click", (event) => { if (!event.target.closest("[data-help-back]")) return; answer.hidden = true; answer.innerHTML = ""; options.hidden = false; options.querySelector("button")?.focus(); });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !panel.hidden) { setHelp(false); trigger.focus(); } });
   panel.addEventListener("keydown", (event) => { if (event.key !== "Tab") return; const items = focusables(); const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } });
+
+  document.querySelectorAll("[data-asas-value]").forEach((button) => button.addEventListener("click", () => {
+    const value = button.dataset.asasValue;
+    document.querySelectorAll("[data-asas-value]").forEach((item) => item.classList.toggle("is-selected", item === button));
+    const select = document.querySelector("[data-asas-value-select]");
+    const hidden = document.querySelector("[data-asas-value-input]");
+    if (select) select.value = value;
+    if (hidden) hidden.value = value;
+    document.querySelector(".asas-interest-form")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    track("1000_asas_value_selected", { value });
+  }));
+  document.querySelector("[data-asas-value-select]")?.addEventListener("change", (event) => {
+    const hidden = document.querySelector("[data-asas-value-input]");
+    if (hidden) hidden.value = event.target.value;
+    document.querySelectorAll("[data-asas-value]").forEach((item) => item.classList.toggle("is-selected", item.dataset.asasValue === event.target.value));
+  });
 
   const backToTop = document.createElement("button");
   backToTop.className = "back-to-top";
