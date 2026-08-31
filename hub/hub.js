@@ -22,19 +22,42 @@
   document.querySelector("[data-test-ia]")?.addEventListener("click",()=>alert("Modo de teste: nenhuma pergunta ou resposta será publicada."));
 
   if (view === "crm" && !authContext.demo) {
+    const token = window.ASAS_AUTH.readSession().access_token;
     const stages = [
       ["Novo lead", ["novo_lead"]], ["Qualificação", ["qualificacao","diagnostico"]],
       ["Contato realizado", ["contato_realizado"]], ["Negociação", ["reuniao","proposta","negociacao"]],
       ["Parceria", ["parceria","execucao","relatorio","renovacao","pos_parceria"]]
     ];
-    const fields = "id,created_at,form_type,name,interest,organization,project_interest,support_type,monthly_amount_interest,pipeline_stage,assigned_to,last_contacted_at";
-    const response = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?select=${fields}&order=created_at.desc&limit=200`, {}, authContext.user.access_token || window.ASAS_AUTH.readSession().access_token);
+    const fields = "id,created_at,form_type,name,interest,organization,project_interest,support_type,monthly_amount_interest,pipeline_stage,assigned_to,last_contacted_at,next_action_at,interaction_note";
+    const response = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?select=${fields}&order=created_at.desc&limit=200`, {}, token);
     const kanban = document.querySelector("[data-kanban]");
     if (!response.ok) kanban.innerHTML = '<p class="hub-empty">Não foi possível carregar os contatos. Verifique o perfil de acesso ou tente novamente.</p>';
     else {
       const leads = await response.json();
-      const card = lead => `<article data-card><strong>${escapeHtml(lead.name)}</strong><small>${escapeHtml(lead.organization || lead.form_type)}</small><p>Interesse: ${escapeHtml(lead.project_interest || lead.interest || lead.support_type || "não classificado")}<br>Origem: ${escapeHtml(lead.form_type)}<br>Recebido: ${new Date(lead.created_at).toLocaleDateString("pt-BR")}</p>${lead.monthly_amount_interest ? `<b>Interesse mensal: ${escapeHtml(lead.monthly_amount_interest)}</b>` : ""}</article>`;
+      const stageOptions = stages.flatMap(([,values])=>values).map(value=>`<option value="${value}">${value.replaceAll("_"," ")}</option>`).join("");
+      const card = lead => `<article data-card data-lead-id="${escapeHtml(lead.id)}"><strong>${escapeHtml(lead.name)}</strong><small>${escapeHtml(lead.organization || lead.form_type)}</small><p>Interesse: ${escapeHtml(lead.project_interest || lead.interest || lead.support_type || "não classificado")}<br>Origem: ${escapeHtml(lead.form_type)}<br>Recebido: ${new Date(lead.created_at).toLocaleDateString("pt-BR")}</p>${lead.monthly_amount_interest ? `<b>Interesse mensal: ${escapeHtml(lead.monthly_amount_interest)}</b>` : ""}<label>Etapa<select data-lead-stage>${stageOptions}</select></label><label>Responsável<input data-lead-owner maxlength="100" value="${escapeHtml(lead.assigned_to || "")}" placeholder="Nome da pessoa responsável"></label><label>Próxima ação<input data-lead-next type="date" value="${lead.next_action_at ? lead.next_action_at.slice(0,10) : ""}"></label><label>Nota breve<textarea data-lead-note maxlength="500" placeholder="Sem dados sensíveis">${escapeHtml(lead.interaction_note || "")}</textarea></label><button type="button" data-save-lead>Salvar acompanhamento</button><span class="hub-save-status" aria-live="polite"></span></article>`;
       kanban.innerHTML = stages.map(([label,values]) => { const matches = leads.filter(lead => values.includes(lead.pipeline_stage)); return `<section><h2>${label}<span>${matches.length}</span></h2>${matches.length ? matches.map(card).join("") : '<p class="hub-empty">Sem contatos</p>'}</section>`; }).join("");
+      leads.forEach(lead => { const select = kanban.querySelector(`[data-lead-id="${CSS.escape(lead.id)}"] [data-lead-stage]`); if (select) select.value = lead.pipeline_stage; });
+      kanban.addEventListener("click", async event => {
+        const button = event.target.closest("[data-save-lead]");
+        if (!button) return;
+        const leadCard = button.closest("[data-lead-id]");
+        const status = leadCard.querySelector(".hub-save-status");
+        button.disabled = true;
+        status.textContent = "Salvando…";
+        const nextDate = leadCard.querySelector("[data-lead-next]").value;
+        const payload = {
+          pipeline_stage: leadCard.querySelector("[data-lead-stage]").value,
+          assigned_to: leadCard.querySelector("[data-lead-owner]").value.trim() || null,
+          next_action_at: nextDate ? `${nextDate}T12:00:00-03:00` : null,
+          interaction_note: leadCard.querySelector("[data-lead-note]").value.trim() || null,
+          last_contacted_at: new Date().toISOString(),
+          status: "em_atendimento"
+        };
+        const saved = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?id=eq.${encodeURIComponent(leadCard.dataset.leadId)}`, { method:"PATCH", headers:{ Prefer:"return=minimal" }, body:JSON.stringify(payload) }, token);
+        if (saved.ok) location.reload();
+        else { status.textContent = "Não foi possível salvar. Verifique sua permissão."; button.disabled = false; }
+      });
     }
   }
 
@@ -49,6 +72,35 @@
     };
     const module = modules[view];
     const token = window.ASAS_AUTH.readSession().access_token;
+    const formConfigs = {
+      mantenedor: { roles:["admin","financeiro","relacionamento"], title:"Novo mantenedor", fields:[
+        ["full_name","Nome completo","text",true], ["email","E-mail","email",false], ["phone","Telefone","tel",false],
+        ["city","Cidade","text",false], ["state","UF","text",false], ["source","Fonte documental/origem","text",true],
+        ["joined_at","Data de entrada","date",false], ["monthly_amount","Valor mensal","number",false],
+        ["consent","Confirmo que existe consentimento ou base legal documentada","checkbox",true]
+      ], transform:data=>({...data, state:data.state?.toUpperCase() || null, monthly_amount:data.monthly_amount?Number(data.monthly_amount):null, consent_at:data.consent?new Date().toISOString():null, consent:undefined, owner_id:authContext.user.id}) },
+      empresas: { roles:["admin","relacionamento"], title:"Nova empresa", fields:[
+        ["name","Nome da empresa","text",true], ["legal_name","Razão social","text",false], ["cnpj","CNPJ","text",false],
+        ["contact_name","Contato responsável","text",false], ["email","E-mail","email",false], ["phone","Telefone","tel",false],
+        ["segment","Segmento","text",false], ["interest","Interesse","text",true], ["next_action_at","Próxima ação","date",false]
+      ], transform:data=>({...data, next_action_at:data.next_action_at?`${data.next_action_at}T12:00:00-03:00`:null, owner_id:authContext.user.id}) },
+      voluntarios: { roles:["admin","relacionamento","projetos"], title:"Novo voluntário", fields:[
+        ["full_name","Nome completo","text",true], ["email","E-mail","email",false], ["phone","Telefone","tel",false],
+        ["profession","Profissão","text",false], ["skills","Habilidades (separadas por vírgula)","text",false],
+        ["availability","Disponibilidade","text",true], ["project_interest","Projeto de interesse","text",false],
+        ["consent","Confirmo que existe consentimento documentado","checkbox",true]
+      ], transform:data=>({...data, skills:data.skills?data.skills.split(",").map(x=>x.trim()).filter(Boolean):[], consent_at:data.consent?new Date().toISOString():null, consent:undefined}) },
+      impacto: { roles:["admin","projetos"], title:"Novo indicador", fields:[
+        ["project","Projeto","text",true], ["name","Indicador","text",true], ["numeric_value","Valor numérico","number",false],
+        ["text_value","Valor textual","text",false], ["period_start","Início do período","date",true], ["period_end","Fim do período","date",true],
+        ["source","Fonte documental","text",true], ["methodology","Metodologia","textarea",true]
+      ], transform:data=>({...data, numeric_value:data.numeric_value?Number(data.numeric_value):null, owner_id:authContext.user.id, status:"rascunho"}) },
+      ia: { roles:["admin","relacionamento","projetos"], title:"Novo conteúdo interno", fields:[
+        ["title","Título","text",true], ["category","Categoria","text",true], ["content","Conteúdo","textarea",true], ["source","Fonte documental","text",true]
+      ], transform:data=>({...data, owner_id:authContext.user.id, status:"rascunho"}) }
+    };
+    const formConfig = formConfigs[view];
+    const canCreate = formConfig?.roles.includes(authContext.profile.role);
     const response = await window.ASAS_AUTH.request(`/rest/v1/${module.table}?select=${module.select}&order=${module.order}&limit=200`, {}, token);
     const footer = document.querySelector(".hub-main > footer");
     document.querySelectorAll(".hub-main > header ~ section,.hub-main > header ~ article,.hub-main > header ~ .hub-profile,.hub-main > header ~ .hub-tabs").forEach(item => item.remove());
@@ -56,7 +108,31 @@
     else {
       const rows = await response.json();
       const table = rows.length ? `<div class="hub-table" role="table"><div class="hub-tr hub-th">${module.columns.map(escapeHtml).map(x=>`<span>${x}</span>`).join("")}</div>${rows.map(row=>`<div class="hub-tr">${module.values(row).map(escapeHtml).map(x=>`<span>${x}</span>`).join("")}</div>`).join("")}</div>` : '<p class="hub-empty">Nenhum registro validado neste módulo.</p>';
-      footer?.insertAdjacentHTML("beforebegin", `<article class="hub-panel"><h2>${labels[view]}</h2>${table}<p class="hub-note">Consulta limitada aos 200 registros mais recentes e protegida pelas permissões do seu perfil.</p></article>`);
+      const toolbar = canCreate ? `<div class="hub-toolbar"><button type="button" data-open-create>+ ${escapeHtml(formConfig.title)}</button></div>` : "";
+      footer?.insertAdjacentHTML("beforebegin", `${toolbar}<article class="hub-panel"><h2>${labels[view]}</h2>${table}<p class="hub-note">Consulta limitada aos 200 registros mais recentes e protegida pelas permissões do seu perfil.</p></article>`);
+      if (canCreate) {
+        const fields = formConfig.fields.map(([name,label,type,required]) => `<label>${escapeHtml(label)}${type === "textarea" ? `<textarea name="${name}" ${required?"required":""}></textarea>` : type === "checkbox" ? `<input name="${name}" type="checkbox" ${required?"required":""}>` : `<input name="${name}" type="${type}" ${type==="number"?'min="0" step="0.01"':""} ${name==="state"?'maxlength="2"':""} ${required?"required":""}>`}</label>`).join("");
+        document.body.insertAdjacentHTML("beforeend", `<dialog class="hub-dialog" data-create-dialog><form method="dialog"><header><h2>${escapeHtml(formConfig.title)}</h2><button value="cancel" aria-label="Fechar">×</button></header><div class="hub-form-grid">${fields}</div><p class="hub-note">Cadastre somente dados documentados e necessários para a finalidade institucional.</p><p class="hub-form-status" aria-live="polite"></p><footer><button value="cancel">Cancelar</button><button type="submit" data-confirm-create>Salvar cadastro</button></footer></form></dialog>`);
+        const dialog = document.querySelector("[data-create-dialog]");
+        document.querySelector("[data-open-create]").addEventListener("click",()=>dialog.showModal());
+        dialog.querySelector("form").addEventListener("submit", async event => {
+          if (event.submitter?.value === "cancel") return;
+          event.preventDefault();
+          const submit = dialog.querySelector("[data-confirm-create]");
+          const formStatus = dialog.querySelector(".hub-form-status");
+          const data = Object.fromEntries(new FormData(event.currentTarget));
+          data.consent = event.currentTarget.elements.consent?.checked || false;
+          if (view === "impacto" && !data.numeric_value && !data.text_value) { formStatus.textContent = "Informe um valor numérico ou textual."; return; }
+          Object.keys(data).forEach(key => { if (data[key] === "") data[key] = null; });
+          submit.disabled = true;
+          formStatus.textContent = "Salvando…";
+          const payload = formConfig.transform(data);
+          Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+          const saved = await window.ASAS_AUTH.request(`/rest/v1/${module.table}`, { method:"POST", headers:{ Prefer:"return=minimal" }, body:JSON.stringify(payload) }, token);
+          if (saved.ok) location.reload();
+          else { formStatus.textContent = "Não foi possível salvar. Confira os campos ou sua permissão."; submit.disabled = false; }
+        });
+      }
     }
   }
 })();
