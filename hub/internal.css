@@ -58,6 +58,7 @@
 .hub-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:22px}
 .hub-form-grid label{display:grid;align-content:start;gap:6px;color:var(--hub);font-size:.78rem;font-weight:800}
 .hub-form-grid input,.hub-form-grid textarea{width:100%;border:1px solid #b8c8d8;border-radius:7px;padding:11px;font:inherit}
+.hub-form-grid select{width:100%;border:1px solid #b8c8d8;border-radius:7px;padding:11px;background:#fff;font:inherit}
 .hub-form-grid textarea{min-height:110px;resize:vertical}
 .hub-form-grid input[type=checkbox]{width:20px;height:20px}
 .hub-form-status{min-height:20px;color:#9a3d00;font-weight:800}

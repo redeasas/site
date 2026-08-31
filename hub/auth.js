@@ -2,7 +2,7 @@
   const projectUrl = "https://yljvlllrvibyongccgmz.supabase.co";
   const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsanZsbGxydmlieW9uZ2NjZ216Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODQ2MDgsImV4cCI6MjEwMTk2MDYwOH0.1wSxovrlmtPQhqcl3zKMG3Qab4CrxfTsqRaw97ObbSI";
   const storageKey = "asas_hub_session";
-  const basePath = location.pathname.includes("/hub/mantenedores/") ? "../login.html" : "login.html";
+  const basePath = location.pathname.endsWith("/asas-hub.html") ? "hub/login.html" : location.pathname.includes("/hub/mantenedores/") ? "../login.html" : "login.html";
   const localDemo = ["localhost", "127.0.0.1"].includes(location.hostname);
   document.documentElement.classList.add("auth-pending");
 

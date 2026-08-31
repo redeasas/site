@@ -3,37 +3,10 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Protótipo ASAS HUB | Rede ASAS Brasil</title>
+  <title>ASAS HUB | Gestão protegida da Rede ASAS Brasil</title>
   <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="asas-hub.css">
 </head>
-<body class="hub-body">
-  <aside class="hub-sidebar">
-    <a class="hub-brand" href="index.html"><span><img src="assets/images/logo-rede-asas-oficial.png" alt="Rede ASAS Brasil"></span></a>
-    <p>ASAS HUB <small>Protótipo validável</small></p>
-    <nav aria-label="Módulos do protótipo">
-      <a class="active" href="#dashboard">▣ Dashboard</a><a href="#asas">♡ 1.000 ASAS</a><a href="#leads">♧ CRM e leads</a><a href="#empresas">▥ Empresas</a><a href="#obra">⌂ Novo prédio</a><a href="#relatorios">▤ Relatórios</a>
-    </nav>
-    <a class="hub-back" href="index.html">← Voltar ao site</a>
-  </aside>
-  <main class="hub-main" id="dashboard">
-    <div class="hub-demo" role="status">Demonstração · todos os dados desta tela são fictícios</div>
-    <header><div><p>Visão geral</p><h1>Olá, equipe Rede ASAS</h1><span>Estrutura de gestão preparada para receber integrações validadas.</span></div><button type="button" aria-label="Perfil de demonstração">AS</button></header>
-    <section class="hub-kpis" id="asas" aria-label="Indicadores demonstrativos">
-      <article><small>1.000 ASAS</small><strong>— / 1.000</strong><span>Aguardando conciliação real</span></article>
-      <article><small>Receita recorrente</small><strong>R$ —</strong><span>Sem fonte financeira conectada</span></article>
-      <article><small>Novos mantenedores</small><strong>—</strong><span>Período não configurado</span></article>
-      <article><small>Contatos pendentes</small><strong>—</strong><span>Fluxo em preparação</span></article>
-    </section>
-    <section class="hub-grid">
-      <article class="hub-panel hub-chart"><div><p>Evolução de mantenedores</p><small>Exemplo visual — sem dados reais</small></div><div class="chart-placeholder"><span></span><span></span><span></span><span></span><span></span><span></span></div></article>
-      <article class="hub-panel" id="leads"><p>Origem dos contatos</p><small>O gráfico será ativado após consentimento, integração e validação.</small><div class="hub-donut"><b>SEM<br>DADOS</b></div></article>
-      <article class="hub-panel"><p>Conversões da IA ASAS</p><small>Nenhum indicador é calculado nesta demonstração.</small><dl><div><dt>Conversas iniciadas</dt><dd>—</dd></div><div><dt>Leads registrados</dt><dd>—</dd></div><div><dt>Encaminhamentos</dt><dd>—</dd></div></dl></article>
-    </section>
-    <section class="hub-lists">
-      <article id="empresas"><h2>Atividade recente</h2><p>Nenhuma atividade real é exibida neste protótipo.</p><ul><li>Estrutura pronta para mantenedores</li><li>Estrutura pronta para empresas parceiras</li><li>Estrutura pronta para voluntariado</li></ul></article>
-      <article id="obra"><h2>Próximos controles</h2><ul><li>Definir responsáveis e permissões</li><li>Conciliar pagamentos no gateway</li><li>Validar indicadores da obra</li><li>Homologar relatórios públicos</li></ul></article>
-    </section>
-    <footer id="relatorios"><strong>Ambiente demonstrativo</strong><span>Não realiza cobrança, não autentica usuários e não expõe dados pessoais.</span></footer>
-  </main>
+<body class="hub-body auth-pending" data-hub-view="dashboard">
+  <script src="hub/auth.js"></script><script src="hub/dashboard.js"></script>
 </body>
 </html>
