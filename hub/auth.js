@@ -10,8 +10,26 @@
   const saveSession = (session) => sessionStorage.setItem(storageKey, JSON.stringify(session));
   const clearSession = () => sessionStorage.removeItem(storageKey);
   const request = (path, options = {}, accessToken) => fetch(`${projectUrl}${path}`, { ...options, headers: { apikey: anonKey, "Content-Type": "application/json", ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), ...(options.headers || {}) } });
+  const safeReturn = (value, fallback = "../asas-hub.html") => (!value || !value.startsWith("/") || value.startsWith("//")) ? fallback : value;
+  const refreshSession = async (session = readSession()) => {
+    if (!session?.refresh_token) return null;
+    const response = await request("/auth/v1/token?grant_type=refresh_token", { method:"POST", body:JSON.stringify({ refresh_token:session.refresh_token }) });
+    if (!response.ok) return null;
+    const renewed = await response.json(); saveSession(renewed); return renewed;
+  };
+  const getValidSession = async () => {
+    const session = readSession();
+    if (!session?.access_token) return null;
+    if (!session.expires_at || Number(session.expires_at) > Math.floor(Date.now()/1000) + 120) return session;
+    return refreshSession(session);
+  };
+  const signOut = async () => {
+    const session = readSession();
+    if (session?.access_token) await request("/auth/v1/logout", { method:"POST" }, session.access_token).catch(()=>null);
+    clearSession();
+  };
 
-  window.ASAS_AUTH = { projectUrl, anonKey, readSession, saveSession, clearSession, request };
+  window.ASAS_AUTH = { projectUrl, anonKey, readSession, saveSession, clearSession, request, safeReturn, refreshSession, getValidSession, signOut };
   window.ASAS_AUTH_READY = (async () => {
     const hash = new URLSearchParams(location.hash.replace(/^#/, ""));
     if (hash.get("access_token")) {
@@ -20,15 +38,20 @@
     }
     if (location.pathname.endsWith("/hub/login.html")) { document.documentElement.classList.remove("auth-pending"); return { login: true }; }
     if (localDemo) { document.documentElement.classList.remove("auth-pending"); return { demo: true }; }
-    const session = readSession();
+    const session = await getValidSession();
     if (!session?.access_token) { location.replace(`${basePath}?return=${encodeURIComponent(location.pathname)}`); return new Promise(() => {}); }
-    const userResponse = await request("/auth/v1/user", {}, session.access_token);
+    let userResponse = await request("/auth/v1/user", {}, session.access_token);
+    if (!userResponse.ok) {
+      const renewed = await refreshSession(session);
+      if (renewed) userResponse = await request("/auth/v1/user", {}, renewed.access_token);
+    }
     if (!userResponse.ok) { clearSession(); location.replace(`${basePath}?expired=1&return=${encodeURIComponent(location.pathname)}`); return new Promise(() => {}); }
     const user = await userResponse.json();
-    const profileResponse = await request(`/rest/v1/asas_staff_profiles?user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=user_id,display_name,role,active`, {}, session.access_token);
+    const activeSession = readSession();
+    const profileResponse = await request(`/rest/v1/asas_staff_profiles?user_id=eq.${encodeURIComponent(user.id)}&active=eq.true&select=user_id,display_name,role,active`, {}, activeSession.access_token);
     const profiles = profileResponse.ok ? await profileResponse.json() : [];
     if (!profiles.length) { clearSession(); location.replace(`${basePath}?denied=1`); return new Promise(() => {}); }
     document.documentElement.classList.remove("auth-pending");
-    return { user, profile: profiles[0] };
+    return { user, profile: profiles[0], session: activeSession };
   })();
 })();

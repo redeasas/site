@@ -178,4 +178,18 @@
       }
     }
   }
+  if (!authContext.demo) {
+    const header = document.querySelector(".hub-main > header");
+    const profileButton = header?.querySelector(":scope > button");
+    if (profileButton) {
+      profileButton.textContent = "Encerrar sessão";
+      profileButton.setAttribute("aria-label", "Encerrar sessão com segurança");
+      profileButton.addEventListener("click", async () => {
+        profileButton.disabled = true;
+        profileButton.textContent = "Encerrando…";
+        await window.ASAS_AUTH.signOut();
+        location.replace(view === "mantenedor" ? "../login.html?signedout=1" : "login.html?signedout=1");
+      });
+    }
+  }
 })();
