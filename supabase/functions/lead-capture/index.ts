@@ -51,6 +51,7 @@ const notifyTeam = async (record: Record<string, unknown>, leadId: string) => {
         <p><strong>E-mail:</strong> ${escapeHtml(record.email) || "Não informado"}</p>
         <p><strong>Telefone:</strong> ${escapeHtml(record.phone) || "Não informado"}</p>
         <p><strong>Assunto:</strong> ${escapeHtml(record.interest || record.form_type)}</p>
+        <p><strong>Valor mensal de interesse:</strong> ${escapeHtml(record.monthly_amount_interest) || "Não informado"}</p>
         <p><strong>Organização:</strong> ${escapeHtml(record.organization) || "Não informada"}</p>
         <p><strong>Mensagem:</strong><br>${escapeHtml(record.message).replaceAll("\n", "<br>") || "Não informada"}</p>
         <hr><p>Registro ${escapeHtml(leadId)}. Acesse o projeto Rede ASAS Brasil no Supabase para acompanhar o atendimento.</p>`,
@@ -122,6 +123,7 @@ Deno.serve(async (request) => {
     investment_range: text(payload.faixa_apoio, 100) || null,
     decision_deadline: text(payload.prazo, 80) || null,
     project_interest: text(payload.projeto, 180) || null,
+    monthly_amount_interest: text(payload.valor_mensal || payload.valor_mensal_selecao, 60) || null,
     lead_score: qualification.score,
     lead_classification: qualification.classification,
     pipeline_stage: "novo_lead",

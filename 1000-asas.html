@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Campanha 1.000 ASAS | Rede ASAS Brasil</title>
+    <meta name="description" content="Conheça a Campanha 1.000 ASAS, programa de mantenedores mensais da Rede ASAS Brasil, e manifeste seu interesse em participar a partir de R$ 10 por mês." />
+    <meta name="theme-color" content="#063264" />
+    <link rel="icon" href="assets/images/logo-rede-asas-transparente.png" />
+    <link rel="preload" as="image" href="assets/images/galeria-02.webp" fetchpriority="high" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="1000-asas">
+    <div class="utility"></div>
+    <header class="header"></header>
+    <main id="conteudo">
+      <section class="asas-hero">
+        <img src="assets/images/galeria-02.webp" alt="Atividade realizada pela Rede ASAS Brasil" width="1200" height="900" fetchpriority="high" />
+        <div class="asas-hero__shade"></div>
+        <div class="asas-hero__content">
+          <p class="eyebrow">Campanha de mantenedores mensais</p>
+          <h1>1.000 pessoas.<br /><em>Milhares de histórias.</em></h1>
+          <p>Estamos construindo uma rede de pessoas que decidiram contribuir mensalmente para fortalecer a continuidade da creche e dos projetos sociais da Rede ASAS.</p>
+          <strong class="asas-hero__amount">A partir de R$ 10 por mês.</strong>
+          <a class="button yellow" href="#participar">Quero ser uma das 1.000 ASAS</a>
+        </div>
+      </section>
+
+      <section class="asas-progress" aria-labelledby="progresso-title">
+        <div>
+          <p class="eyebrow blue">Progresso da campanha</p>
+          <h2 id="progresso-title">Contador em implantação.</h2>
+          <p>O total público será ativado somente quando o ASAS HUB estiver conectado aos pagamentos recorrentes e os mantenedores ativos estiverem conciliados.</p>
+        </div>
+        <div class="asas-progress__panel" role="status">
+          <strong>— / 1.000 ASAS</strong>
+          <div class="asas-progress__bar" aria-hidden="true"><span></span></div>
+          <small>Nenhum número será estimado ou preenchido manualmente.</small>
+        </div>
+      </section>
+
+      <section class="asas-manifesto">
+        <p class="eyebrow">Por que 1.000 ASAS?</p>
+        <blockquote>Não precisamos que poucos façam muito.<br /><strong>Precisamos que muitos decidam fazer um pouco.</strong></blockquote>
+        <p>A contribuição recorrente ajuda a criar previsibilidade para alimentação, materiais, profissionais, atividades e manutenção dos projetos. Cada pessoa escolhe um valor possível para sua realidade.</p>
+      </section>
+
+      <section class="asas-values" id="participar">
+        <div class="section-title">
+          <div><p class="eyebrow">Escolha como deseja participar</p><h2>Todo valor mensal ajuda a sustentar continuidade.</h2></div>
+          <p>Esta etapa registra seu interesse. Nenhuma cobrança será realizada até a integração segura com o gateway de pagamentos estar concluída.</p>
+        </div>
+        <div class="asas-value-grid" role="list" aria-label="Valores mensais sugeridos">
+          <button type="button" data-asas-value="R$ 10">R$ 10<small>por mês</small></button>
+          <button type="button" data-asas-value="R$ 20">R$ 20<small>por mês</small></button>
+          <button type="button" data-asas-value="R$ 30">R$ 30<small>por mês</small></button>
+          <button type="button" data-asas-value="R$ 50">R$ 50<small>por mês</small></button>
+          <button type="button" data-asas-value="Outro valor">Outro<small>valor mensal</small></button>
+        </div>
+        <form class="lead-form asas-interest-form" data-lead-form data-form-type="1000-asas-interesse">
+          <input type="hidden" name="interesse" value="Campanha 1.000 ASAS" />
+          <input type="hidden" name="valor_mensal" data-asas-value-input value="" />
+          <div class="form-grid">
+            <label>Nome completo<input name="nome" autocomplete="name" required /></label>
+            <label>E-mail<input type="email" name="email" autocomplete="email" required /></label>
+            <label>WhatsApp<input type="tel" name="telefone" autocomplete="tel" required /></label>
+            <label>Valor mensal de interesse<select name="valor_mensal_selecao" data-asas-value-select required><option value="">Selecione</option><option>R$ 10</option><option>R$ 20</option><option>R$ 30</option><option>R$ 50</option><option>Outro valor</option></select></label>
+          </div>
+          <label>Mensagem (opcional)<textarea name="mensagem" placeholder="Se desejar, conte por que quer fazer parte."></textarea></label>
+          <label class="honeypot">Não preencha<input name="website" tabindex="-1" autocomplete="off" /></label>
+          <label class="consent"><input type="checkbox" name="consentimento" required /> Autorizo o contato da Rede ASAS sobre a Campanha 1.000 ASAS, conforme a <a href="privacidade.html">Política de Privacidade</a>.</label>
+          <button class="button blue" type="submit">Registrar meu interesse</button>
+          <p class="form-status" data-form-status aria-live="polite"></p>
+          <small>Este formulário não cria cobrança. Seus dados são enviados ao ambiente protegido da Rede ASAS.</small>
+        </form>
+      </section>
+
+      <section class="asas-impact">
+        <p class="eyebrow blue">O que essa contribuição fortalece?</p>
+        <h2>Uma rede que cuida de pessoas por inteiro.</h2>
+        <div class="asas-impact__grid">
+          <article><span>01</span><h3>Educação</h3><p>Educação infantil, leitura, formação comunitária e inclusão digital.</p></article>
+          <article><span>02</span><h3>Esporte</h3><p>Atividades que fortalecem disciplina, convivência e trabalho em equipe.</p></article>
+          <article><span>03</span><h3>Cultura e tecnologia</h3><p>Música, comunicação, criatividade e novas formas de expressão.</p></article>
+          <article><span>04</span><h3>Famílias</h3><p>Acolhimento, fortalecimento de vínculos e proteção social.</p></article>
+          <article><span>05</span><h3>Estrutura</h3><p>Materiais, alimentação e condições necessárias para as atividades.</p></article>
+          <article><span>06</span><h3>Continuidade</h3><p>Previsibilidade para manter os projetos funcionando ao longo do ano.</p></article>
+        </div>
+        <p class="data-note">A contribuição da Campanha 1.000 ASAS apoia a continuidade institucional. A campanha do novo prédio possui controle separado.</p>
+      </section>
+
+      <section class="asas-steps">
+        <p class="eyebrow">Como funcionará</p>
+        <h2>Simples para participar. Responsável para administrar.</h2>
+        <ol>
+          <li><strong>1</strong><div><h3>Escolha seu valor</h3><p>A partir de R$ 10 mensais, conforme sua possibilidade.</p></div></li>
+          <li><strong>2</strong><div><h3>Faça seu cadastro</h3><p>Somente os dados necessários e consentimentos claros.</p></div></li>
+          <li><strong>3</strong><div><h3>Confirme com segurança</h3><p>O pagamento será processado por gateway integrado e auditável.</p></div></li>
+          <li><strong>4</strong><div><h3>Acompanhe sua participação</h3><p>A futura área Minha ASA reunirá contribuições e impacto aprovado.</p></div></li>
+        </ol>
+      </section>
+
+      <section class="asas-trust">
+        <div><p class="eyebrow blue">Confiança e transparência</p><h2>Prestação de contas faz parte da campanha.</h2><p>Indicadores públicos terão definição, período, fonte e status de validação. Pagamentos pendentes não serão contabilizados como recebidos.</p><div class="hero-actions"><a class="button blue" href="impacto.html">Conhecer o impacto</a><a class="button outline" href="transparencia.html">Ver transparência</a></div></div>
+        <figure><img src="assets/images/depoimento-familia-01-poster.jpg" alt="Registro autorizado de família atendida pela Rede ASAS" width="960" height="540" /><figcaption>Histórias e registros reais serão publicados somente com autorização.</figcaption></figure>
+      </section>
+
+      <section class="faq-section">
+        <p class="eyebrow blue">Dúvidas frequentes</p>
+        <h2>Informação clara antes de participar.</h2>
+        <div class="faq-list">
+          <details><summary>A campanha já está recebendo pagamentos recorrentes?</summary><p>Ainda não. Nesta primeira etapa, o site registra interesse. A cobrança só será disponibilizada após integração e testes com um gateway seguro.</p></details>
+          <details><summary>O valor será usado exclusivamente no novo prédio?</summary><p>Não. A Campanha 1.000 ASAS é destinada à continuidade da creche e dos projetos. O novo prédio é uma campanha separada, com controle próprio.</p></details>
+          <details><summary>Como o contador será atualizado?</summary><p>Automaticamente pelo ASAS HUB, considerando apenas mantenedores ativos com pagamento confirmado conforme o critério oficial aprovado.</p></details>
+          <details><summary>Poderei alterar ou cancelar minha contribuição?</summary><p>Sim. As regras e os canais estarão visíveis antes da adesão, sem criar barreiras artificiais para alteração, pausa ou cancelamento.</p></details>
+        </div>
+      </section>
+
+      <section class="asas-other">
+        <p class="eyebrow">Existem muitas formas de fazer parte</p>
+        <h2>Encontre o caminho que combina com você.</h2>
+        <div class="ways-grid">
+          <a href="apoie.html"><span>Doação única</span><h3>Contribua uma vez</h3><p>Conheça os dados validados e os cuidados para doar.</p><b>Ver opções →</b></a>
+          <a href="empresas.html"><span>Empresas</span><h3>Construa uma parceria</h3><p>Recursos, serviços, materiais e conhecimento.</p><b>Conversar →</b></a>
+          <a href="voluntariado.html"><span>Voluntariado</span><h3>Compartilhe sua experiência</h3><p>Cadastre seu interesse para avaliação da equipe.</p><b>Participar →</b></a>
+          <a href="novo-predio.html"><span>Novo prédio</span><h3>Apoie a construção</h3><p>Conheça o projeto, o orçamento preliminar e a campanha.</p><b>Conhecer →</b></a>
+        </div>
+      </section>
+    </main>
+    <footer class="footer"></footer>
+    <script src="site-config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
