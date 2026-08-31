@@ -1,0 +1,9 @@
+.asa-coming-soon main{margin:0 auto;max-width:1120px;padding:32px}
+.asa-coming-soon .asa-logo{display:block;margin-bottom:20px}
+.asa-coming-soon header{padding:34px 0}
+.asa-coming-soon header h1{max-width:760px}
+.asa-coming-soon header span{display:block;max-width:760px;line-height:1.65}
+.asa-coming-soon .asa-news article{min-height:150px;padding:12px}
+.asa-coming-soon .asa-news h3{line-height:1.45}
+.asa-coming-soon>main>p a{color:var(--blue);font-weight:800;text-decoration:none}
+@media(max-width:540px){.asa-coming-soon main{padding:18px}}

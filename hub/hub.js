@@ -1,9 +1,10 @@
 (async () => {
   const authContext = await window.ASAS_AUTH_READY;
   const view = document.body.dataset.hubView || "crm";
-  const labels = { mantenedor:"Ficha 360°", crm:"CRM", financeiro:"Financeiro", empresas:"Empresas", voluntarios:"Voluntários", impacto:"Impacto", ia:"IA ASAS" };
+  const labels = { mantenedor:"Ficha 360°", crm:"CRM", financeiro:"Financeiro", empresas:"Empresas", voluntarios:"Voluntários", impacto:"Impacto", ia:"IA ASAS", relatorios:"Relatórios e auditoria", usuarios:"Usuários e permissões" };
+  const activeNav = { mantenedor:"Mantenedores", relatorios:"Relatórios", usuarios:"Usuários" }[view] || labels[view];
   const prefix = view === "mantenedor" ? "../../" : "../";
-  const navigation = [["../asas-hub.html","Dashboard"],["mantenedores/demo.html","Mantenedores"],["financeiro.html","Financeiro"],["crm.html","CRM"],["empresas.html","Empresas"],["voluntarios.html","Voluntários"],["impacto.html","Impacto"],["ia.html","IA ASAS"]];
+  const navigation = [["../asas-hub.html","Dashboard"],["mantenedores/demo.html","Mantenedores"],["financeiro.html","Financeiro"],["crm.html","CRM"],["empresas.html","Empresas"],["voluntarios.html","Voluntários"],["impacto.html","Impacto"],["ia.html","IA ASAS"],["relatorios.html","Relatórios"],["usuarios.html","Usuários"]];
   const cards = (items) => `<section class="hub-kpis">${items.map(([a,b,c])=>`<article><small>${a}</small><strong>${b}</strong><span>${c}</span></article>`).join("")}</section>`;
   const emptyRows = (columns, rows=5) => `<div class="hub-table" role="table"><div class="hub-tr hub-th">${columns.map(x=>`<span>${x}</span>`).join("")}</div>${Array.from({length:rows},(_,i)=>`<div class="hub-tr"><span>Registro fictício ${i+1}</span>${columns.slice(1).map(()=>`<span>—</span>`).join("")}</div>`).join("")}</div>`;
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
@@ -14,12 +15,16 @@
     empresas: `${cards([["Leads","—","Demonstração"],["Em negociação","—","Demonstração"],["Parceiros","—","Demonstração"],["Inativos","—","Demonstração"]])}<article class="hub-panel"><h2>Gestão de parcerias</h2>${emptyRows(["Empresa","Contato","Interesse","Status","Responsável","Próxima ação"],6)}</article>`,
     voluntarios: `${cards([["Novos","—","Sem dados pessoais"],["Entrevista","—","Sem agenda"],["Ativos","—","Sem validação"],["Pausados","—","Demonstração"]])}<article class="hub-panel"><h2>Cadastros de voluntariado</h2>${emptyRows(["Nome","Área","Disponibilidade","Status","Projeto","Último contato"],6)}<p class="hub-note">LGPD: coletar somente dados necessários, consentimento e documentos aplicáveis ao projeto.</p></article>`,
     impacto: `${cards([["Crianças atendidas","—","Em validação"],["Famílias atendidas","—","Em validação"],["Atividades","—","Em validação"],["Atendimentos","—","Em validação"]])}<section class="hub-two"><article class="hub-panel"><h2>Indicadores</h2>${emptyRows(["Indicador","Período","Fonte","Responsável","Status"],4)}</article><article class="hub-panel"><h2>O que suas ASAS fizeram este mês</h2><p class="hub-empty">Conteúdo ainda não publicado. Somente indicadores com status APROVADO ou PUBLICADO poderão alimentar o site e Minha ASA.</p><div class="hub-workflow"><span>Rascunho</span><i>→</i><span>Em validação</span><i>→</i><span>Aprovado</span><i>→</i><span>Publicado</span></div></article></section>`,
-    ia: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar conteúdo aprovado…"><button data-test-ia>Testar IA</button><button disabled>+ Novo conteúdo</button></div><section class="hub-two"><aside class="hub-panel"><h2>Categorias</h2><ul class="hub-categories">${["Institucional","História","Projetos","Creche","Impacto","Transparência","1.000 ASAS","Doações","Voluntariado","Empresas","Novo prédio","Contatos"].map(x=>`<li>${x}</li>`).join("")}</ul></aside><article class="hub-panel"><h2>Base de conhecimento</h2>${emptyRows(["Título","Categoria","Status","Fonte"],6)}<p class="hub-note">A IA pública só poderá consultar conteúdos com status PUBLICADO e fonte aprovada.</p></article></section>`
+    ia: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar conteúdo aprovado…"><button data-test-ia>Testar IA</button><button disabled>+ Novo conteúdo</button></div><section class="hub-two"><aside class="hub-panel"><h2>Categorias</h2><ul class="hub-categories">${["Institucional","História","Projetos","Creche","Impacto","Transparência","1.000 ASAS","Doações","Voluntariado","Empresas","Novo prédio","Contatos"].map(x=>`<li>${x}</li>`).join("")}</ul></aside><article class="hub-panel"><h2>Base de conhecimento</h2>${emptyRows(["Título","Categoria","Status","Fonte"],6)}<p class="hub-note">A IA pública só poderá consultar conteúdos com status PUBLICADO e fonte aprovada.</p></article></section>`,
+    relatorios: `<article class="hub-panel" data-report-content><p class="hub-empty">Carregando relatórios conforme sua permissão…</p></article>`,
+    usuarios: `<article class="hub-panel" data-user-content><p class="hub-empty">Carregando usuários autorizados…</p></article>`
   };
-  document.body.innerHTML = `<aside class="hub-sidebar"><a class="hub-brand" href="${prefix}index.html"><span><img src="${prefix}assets/images/logo-rede-asas-oficial.png" alt="Rede ASAS Brasil"></span></a><p>ASAS HUB<small>${authContext.demo ? "Ambiente demonstrativo" : `Acesso ${escapeHtml(authContext.profile.role)}`}</small></p><nav>${navigation.map(([href,label])=>`<a${label===labels[view]||label===view.toUpperCase()?' class="active"':''} href="${view==='mantenedor'?'../':''}${href}">${label}</a>`).join("")}</nav><a class="hub-back" href="${prefix}index.html">← Voltar ao site</a></aside><main class="hub-main"><div class="hub-demo">${authContext.demo ? "Demonstração · sem dados pessoais, financeiros ou operacionais reais" : "Ambiente protegido · dados sujeitos a permissão, finalidade e auditoria"}</div><header><div><p>ASAS HUB / ${labels[view]}</p><h1>${labels[view]}</h1><span>${authContext.demo ? "Protótipo funcional para validação de arquitetura e fluxo." : `Sessão de ${escapeHtml(authContext.profile.display_name)}.`}</span></div><button aria-label="Perfil autenticado">AS</button></header>${screens[view]}<footer><strong>Controle de acesso ativo</strong><span>Administrador · Financeiro · Relacionamento · Projetos · Leitura/Auditoria</span></footer></main>`;
+  document.body.innerHTML = `<aside class="hub-sidebar"><a class="hub-brand" href="${prefix}index.html"><span><img src="${prefix}assets/images/logo-rede-asas-oficial.png" alt="Rede ASAS Brasil"></span></a><p>ASAS HUB<small>${authContext.demo ? "Ambiente demonstrativo" : `Acesso ${escapeHtml(authContext.profile.role)}`}</small></p><nav>${navigation.map(([href,label])=>`<a${label===activeNav?' class="active"':''} href="${view==='mantenedor'?'../':''}${href}">${label}</a>`).join("")}</nav><a class="hub-back" href="${prefix}index.html">← Voltar ao site</a></aside><main class="hub-main"><div class="hub-demo">${authContext.demo ? "Demonstração · sem dados pessoais, financeiros ou operacionais reais" : "Ambiente protegido · dados sujeitos a permissão, finalidade e auditoria"}</div><header><div><p>ASAS HUB / ${labels[view]}</p><h1>${labels[view]}</h1><span>${authContext.demo ? "Protótipo funcional para validação de arquitetura e fluxo." : `Sessão de ${escapeHtml(authContext.profile.display_name)}.`}</span></div><button aria-label="Perfil autenticado">AS</button></header>${screens[view]}<footer><strong>Controle de acesso ativo</strong><span>Administrador · Financeiro · Relacionamento · Projetos · Leitura/Auditoria</span></footer></main>`;
   document.querySelector("[data-hub-search]")?.addEventListener("input",e=>{const term=e.target.value.toLowerCase();document.querySelectorAll("[data-card],.hub-tr:not(.hub-th)").forEach(x=>x.hidden=!x.textContent.toLowerCase().includes(term));});
   document.querySelectorAll("[data-stage]").forEach(select=>select.addEventListener("change",()=>{select.closest("[data-card]").dataset.pendingMove="true"; select.insertAdjacentHTML("afterend",'<small class="hub-warning">Alteração apenas visual; não foi salva.</small>');}));
   document.querySelector("[data-test-ia]")?.addEventListener("click",()=>alert("Modo de teste: nenhuma pergunta ou resposta será publicada."));
+  if (authContext.demo && view === "relatorios") document.querySelector("[data-report-content]").innerHTML = '<h2>Trilha de auditoria</h2><p class="hub-empty">A visualização real exige sessão com perfil Administrador ou Leitura/Auditoria.</p>';
+  if (authContext.demo && view === "usuarios") document.querySelector("[data-user-content]").innerHTML = '<h2>Equipe autorizada</h2><p class="hub-empty">Convites e permissões reais exigem sessão de Administrador.</p>';
 
   if (view === "crm" && !authContext.demo) {
     const token = window.ASAS_AUTH.readSession().access_token;
@@ -131,6 +136,44 @@
           const saved = await window.ASAS_AUTH.request(`/rest/v1/${module.table}`, { method:"POST", headers:{ Prefer:"return=minimal" }, body:JSON.stringify(payload) }, token);
           if (saved.ok) location.reload();
           else { formStatus.textContent = "Não foi possível salvar. Confira os campos ou sua permissão."; submit.disabled = false; }
+        });
+      }
+    }
+  }
+
+  if (!authContext.demo && view === "relatorios") {
+    const token = window.ASAS_AUTH.readSession().access_token;
+    const target = document.querySelector("[data-report-content]");
+    const response = await window.ASAS_AUTH.request("/rest/v1/asas_audit_log?select=occurred_at,action,entity_type,entity_id&order=occurred_at.desc&limit=200",{},token);
+    if (!response.ok) target.innerHTML = '<p class="hub-empty">Seu perfil não possui acesso à auditoria.</p>';
+    else {
+      const rows = await response.json();
+      const counts = rows.reduce((acc,row)=>(acc[row.entity_type]=(acc[row.entity_type]||0)+1,acc),{});
+      target.innerHTML = `<h2>Trilha de auditoria</h2><p class="hub-note">Exibe os 200 eventos mais recentes. O relatório não inclui senhas, cartões ou conteúdo pessoal dos registros alterados.</p>${rows.length?`<div class="hub-table"><div class="hub-tr hub-th"><span>Data</span><span>Ação</span><span>Entidade</span><span>Registro</span><span>Eventos da entidade</span><span>Controle</span></div>${rows.map(row=>`<div class="hub-tr"><span>${new Date(row.occurred_at).toLocaleString("pt-BR")}</span><span>${escapeHtml(row.action)}</span><span>${escapeHtml(row.entity_type)}</span><span>${escapeHtml(row.entity_id||"—")}</span><span>${counts[row.entity_type]}</span><span>Auditado</span></div>`).join("")}</div>`:'<p class="hub-empty">Nenhum evento registrado.</p>'}`;
+    }
+  }
+
+  if (!authContext.demo && view === "usuarios") {
+    const token = window.ASAS_AUTH.readSession().access_token;
+    const target = document.querySelector("[data-user-content]");
+    const response = await window.ASAS_AUTH.request("/rest/v1/asas_staff_profiles?select=user_id,display_name,role,active,created_at,updated_at&order=created_at.asc&limit=100",{},token);
+    if (!response.ok) target.innerHTML = '<p class="hub-empty">Seu perfil não possui acesso à gestão de usuários.</p>';
+    else {
+      const rows = await response.json();
+      const invite = authContext.profile.role === "admin" ? '<button type="button" data-open-invite>+ Convidar usuário</button>' : "";
+      target.innerHTML = `<div class="hub-toolbar">${invite}</div><h2>Equipe autorizada</h2><p class="hub-note">Cada pessoa deve possuir conta individual. Nunca compartilhe acessos.</p><div class="hub-table"><div class="hub-tr hub-th"><span>Nome</span><span>Perfil</span><span>Status</span><span>Criado em</span><span>Atualizado em</span><span>Identificador</span></div>${rows.map(row=>`<div class="hub-tr"><span>${escapeHtml(row.display_name)}</span><span>${escapeHtml(row.role)}</span><span>${row.active?"Ativo":"Inativo"}</span><span>${new Date(row.created_at).toLocaleDateString("pt-BR")}</span><span>${new Date(row.updated_at).toLocaleDateString("pt-BR")}</span><span>${escapeHtml(row.user_id.slice(0,8))}…</span></div>`).join("")}</div>`;
+      if (authContext.profile.role === "admin") {
+        document.body.insertAdjacentHTML("beforeend", `<dialog class="hub-dialog" data-invite-dialog><form><header><h2>Convidar usuário</h2><button type="button" data-close-invite aria-label="Fechar">×</button></header><div class="hub-form-grid"><label>Nome completo<input name="display_name" required maxlength="120"></label><label>E-mail institucional<input type="email" name="email" required maxlength="180"></label><label>Perfil<select name="role" required><option value="relacionamento">Relacionamento</option><option value="projetos">Projetos</option><option value="financeiro">Financeiro</option><option value="auditoria">Leitura/Auditoria</option><option value="admin">Administrador</option></select></label></div><p class="hub-note">Ao confirmar, o Supabase enviará um convite ao e-mail informado.</p><p class="hub-form-status" aria-live="polite"></p><footer><button type="button" data-close-invite>Cancelar</button><button type="submit" data-send-invite>Enviar convite</button></footer></form></dialog>`);
+        const dialog = document.querySelector("[data-invite-dialog]");
+        document.querySelector("[data-open-invite]").addEventListener("click",()=>dialog.showModal());
+        dialog.querySelectorAll("[data-close-invite]").forEach(button=>button.addEventListener("click",()=>dialog.close()));
+        dialog.querySelector("form").addEventListener("submit",async event=>{
+          event.preventDefault();
+          if (!confirm("Confirma o envio do convite institucional e a criação deste perfil de acesso?")) return;
+          const button = dialog.querySelector("[data-send-invite]"), status = dialog.querySelector(".hub-form-status"), data = Object.fromEntries(new FormData(event.currentTarget));
+          button.disabled=true; status.textContent="Enviando convite…";
+          const sent = await fetch("https://yljvlllrvibyongccgmz.supabase.co/functions/v1/staff-invite",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${token}`},body:JSON.stringify(data)});
+          if (sent.ok) location.reload(); else { status.textContent="Não foi possível enviar. Confira o e-mail, o perfil ou se a pessoa já possui acesso."; button.disabled=false; }
         });
       }
     }
