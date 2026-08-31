@@ -139,6 +139,7 @@ function rede_asas_static_router(): void {
         '/noticias' => 'noticias.html',
         '/novo-predio' => 'novo-predio.html',
         '/1000-asas' => '1000-asas.html',
+        '/1000asas' => '1000-asas.html',
         '/apoie' => 'apoie.html',
         '/voluntariado' => 'voluntariado.html',
         '/empresas' => 'empresas.html',

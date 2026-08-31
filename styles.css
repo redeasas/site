@@ -1225,3 +1225,27 @@ p {
   .asas-value-grid button { min-height:92px; }
   .asas-steps li,.asas-steps li:nth-child(3) { border-left:1px solid var(--line); }
 }
+
+/* Identidade visual validada — pacote ASAS HUB 2026. */
+.brand-official { width:154px; height:78px; overflow:hidden; display:block; position:relative; }
+.brand-official > span { position:absolute; inset:0; overflow:hidden; }
+.brand-official img { width:235px; max-width:none; height:auto; position:absolute; left:-39px; top:-39px; }
+.footer-main > div:first-child > img { width:190px; height:105px; object-fit:cover; object-position:center; clip-path:inset(24% 19% 23% 19%); transform:scale(1.55); transform-origin:left center; margin:0 0 16px; }
+.home-hero { width:min(1240px,calc(100% - 48px)); min-height:560px; margin:30px auto 0; display:grid; grid-template-columns:.86fr 1.14fr; overflow:hidden; border:1px solid var(--line); border-radius:14px; background:linear-gradient(135deg,#fff 0%,#f3f7fb 100%); box-shadow:0 24px 70px rgba(4,42,80,.1); }
+.home-hero > img { grid-column:2; width:100%; height:100%; object-fit:cover; min-height:560px; }
+.home-hero__copy { grid-column:1; grid-row:1; display:flex; flex-direction:column; justify-content:center; padding:clamp(38px,6vw,78px); color:var(--navy); }
+.home-hero__copy .anniversary { display:none; }
+.home-hero__copy .kicker { color:var(--blue); }
+.home-hero__copy h1 { margin:14px 0 24px; font:850 clamp(2.7rem,4.7vw,5.25rem)/.98 var(--display); letter-spacing:-.045em; }
+.home-hero__copy h1 em { color:var(--blue); font-style:normal; }
+.home-hero__copy .hero-lead { color:#46566c; max-width:610px; font-size:1.05rem; }
+.home-hero__copy .button.outline { border-color:var(--navy); color:var(--navy); }
+.home-paths { position:relative; width:min(1140px,calc(100% - 80px)); margin:-56px auto 28px; display:grid; grid-template-columns:repeat(4,1fr); background:#fff; border-radius:12px; box-shadow:0 18px 55px rgba(4,42,80,.14); overflow:hidden; z-index:3; }
+.home-paths a { min-height:190px; padding:28px; border-right:1px solid var(--line); }
+.home-paths a:last-child { border-right:0; }
+.home-paths span { color:var(--blue); font-size:1.5rem; }
+.home-paths h2 { color:var(--navy); margin:14px 0 8px; font-size:1.05rem; text-transform:uppercase; }
+.home-paths p { color:var(--muted); margin:0 0 16px; font-size:.86rem; line-height:1.5; }
+.home-paths b { color:var(--blue); font-size:.76rem; text-transform:uppercase; }
+@media(max-width:900px){.home-hero{grid-template-columns:1fr}.home-hero>img{grid-column:1;grid-row:1;height:420px;min-height:0}.home-hero__copy{grid-column:1;grid-row:2}.home-paths{margin:24px auto;grid-template-columns:1fr 1fr}.home-paths a:nth-child(2){border-right:0}}
+@media(max-width:560px){.home-hero{width:calc(100% - 28px);margin-top:14px}.home-hero>img{height:300px}.home-hero__copy{padding:34px 24px}.home-hero__copy h1{font-size:2.65rem}.home-paths{width:calc(100% - 28px);grid-template-columns:1fr}.home-paths a{min-height:auto;border-right:0;border-bottom:1px solid var(--line)}}

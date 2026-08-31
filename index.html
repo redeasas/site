@@ -26,7 +26,7 @@
     <link
       rel="preload"
       as="image"
-      href="assets/images/galeria-06.webp"
+      href="assets/images/galeria-03.webp"
       fetchpriority="high"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -67,16 +67,15 @@
     </header>
 
     <main id="conteudo">
-      <section class="hero">
+      <section class="home-hero" aria-labelledby="home-title">
         <img
-          src="assets/images/galeria-06.webp"
-          alt="Atividade coletiva realizada pela Rede ASAS Brasil"
+          src="assets/images/galeria-03.webp"
+          alt="Crianças da Rede ASAS em atividade recreativa"
           width="1200"
           height="900"
           fetchpriority="high"
         />
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
+        <div class="home-hero__copy">
           <div class="anniversary">
             <strong>30</strong
             ><span>anos<br />transformando<br />histórias</span>
@@ -84,7 +83,7 @@
           <p class="kicker">
             Educação · Cultura · Esporte · Assistência social
           </p>
-          <h1>
+          <h1 id="home-title">
             30 anos transformando<br />oportunidades<br /><em>em futuro.</em>
           </h1>
           <p class="hero-lead">
@@ -92,15 +91,15 @@
             juntos para fortalecer crianças, jovens e famílias no Taquaril, em
             Belo Horizonte.
           </p>
-          <div class="hero-actions">
-            <a class="button primary" href="impacto.html">Conheça nosso impacto</a
-            ><a class="button outline" href="empresas.html">Seja uma empresa parceira</a
-            ><a class="hero-text-link" href="apoie.html">Faça uma doação →</a>
-          </div>
+          <div class="hero-actions"><a class="button blue" href="quem-somos.html">Conheça nossa história</a><a class="button outline" href="impacto.html">Conheça nosso impacto</a></div>
         </div>
-        <a class="scroll" href="#impacto"
-          >Conheça nosso impacto <span>↓</span></a
-        >
+      </section>
+
+      <section class="home-paths" aria-label="Conheça nossas frentes">
+        <a href="projetos.html#educacao"><span aria-hidden="true">◇</span><h2>Creche</h2><p>Acolhimento e educação na primeira infância.</p><b>Saiba mais →</b></a>
+        <a href="projetos.html"><span aria-hidden="true">▤</span><h2>Projetos</h2><p>Esporte, cultura, tecnologia e desenvolvimento.</p><b>Saiba mais →</b></a>
+        <a href="impacto.html"><span aria-hidden="true">◎</span><h2>Impacto</h2><p>Resultados publicados com contexto, período e fonte.</p><b>Saiba mais →</b></a>
+        <a href="transparencia.html"><span aria-hidden="true">▧</span><h2>Transparência</h2><p>Gestão responsável e documentos institucionais.</p><b>Saiba mais →</b></a>
       </section>
 
       <section class="impact-bar" id="impacto">
