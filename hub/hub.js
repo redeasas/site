@@ -1,5 +1,5 @@
 (async () => {
-  await window.ASAS_AUTH_READY;
+  const authContext = await window.ASAS_AUTH_READY;
   const view = document.body.dataset.hubView || "crm";
   const labels = { mantenedor:"Ficha 360°", crm:"CRM", financeiro:"Financeiro", empresas:"Empresas", voluntarios:"Voluntários", impacto:"Impacto", ia:"IA ASAS" };
   const prefix = view === "mantenedor" ? "../../" : "../";
@@ -8,7 +8,7 @@
   const emptyRows = (columns, rows=5) => `<div class="hub-table" role="table"><div class="hub-tr hub-th">${columns.map(x=>`<span>${x}</span>`).join("")}</div>${Array.from({length:rows},(_,i)=>`<div class="hub-tr"><span>Registro fictício ${i+1}</span>${columns.slice(1).map(()=>`<span>—</span>`).join("")}</div>`).join("")}</div>`;
   const screens = {
     mantenedor: `<div class="hub-profile"><div class="hub-avatar">EX</div><div><small>Mantenedor demonstrativo</small><h2>Pessoa Exemplo</h2><p>ASA #DEMO · Contato protegido · Belo Horizonte/MG</p></div><span class="hub-status">ATIVO — MOCK</span></div>${cards([["Contribuição mensal","R$ —","Gateway não conectado"],["Total contribuído","R$ —","Sem conciliação"],["Indicações","—","Sem dados reais"],["Origem","Demonstração","Não rastreada"]])}<div class="hub-tabs"><button class="active">Resumo</button><button>Pagamentos</button><button>Relacionamento</button><button>Indicações</button><button>Dados pessoais</button><button>Documentos</button></div><section class="hub-two"><article class="hub-panel"><h2>Histórico de pagamentos</h2>${emptyRows(["Competência","Valor","Status","Método"],4)}</article><article class="hub-panel"><h2>Resumo do relacionamento</h2><p class="hub-empty">Nenhuma interação real. Quando o backend estiver ativo, alterações sensíveis gerarão trilha de auditoria.</p><h3>Notas da equipe</h3><p>Campo demonstrativo com acesso condicionado ao perfil autorizado.</p></article></section>`,
-    crm: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar leads demonstrativos…"><button>Filtros</button><button disabled>+ Novo lead</button></div><div class="hub-kanban" data-kanban>${["Novo lead","Contato realizado","Interessado","Aguardando","Link enviado","Convertido","Não avançou"].map((stage,i)=>`<section><h2>${stage}<span>${i<3?1:0}</span></h2>${i<3?`<article data-card><strong>${["Contato Exemplo","Empresa Demonstração","Pessoa Voluntária"][i]}</strong><small>${["1.000 ASAS","Empresa","Voluntariado"][i]}</small><p>Origem: demonstração<br>Responsável: não definido</p><label>Mover para<select data-stage><option>${stage}</option><option>Contato realizado</option><option>Interessado</option><option>Não avançou</option></select></label></article>`:`<p class="hub-empty">Sem cards</p>`}</section>`).join("")}</div>`,
+    crm: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar contatos autorizados…"><button disabled>Filtros</button><button disabled>+ Novo lead</button></div><p class="hub-note">Dados reais protegidos por sessão, perfil de acesso e trilha de auditoria. Exibição limitada ao necessário para triagem.</p><div class="hub-kanban" data-kanban><p class="hub-empty">Carregando contatos com segurança…</p></div>`,
     financeiro: `${cards([["Receita total","R$ —","Sem gateway"],["Receita recorrente","R$ —","Sem webhook"],["Doações pontuais","R$ —","Não conciliado"],["Pendências","—","Sem dados reais"]])}<section class="hub-two"><article class="hub-panel"><h2>Evolução da receita</h2><div class="hub-chart-empty">Gráfico aguardando integração financeira</div></article><article class="hub-panel"><h2>Origem da receita</h2><div class="hub-donut"><b>SEM<br>DADOS</b></div></article></section><article class="hub-panel"><h2>Movimentações</h2>${emptyRows(["Data","Descrição","Categoria","Valor","Status"],5)}<p class="hub-note">Contrato previsto: eventos idempotentes do gateway por webhook; nenhum dado completo de cartão será armazenado.</p></article>`,
     empresas: `${cards([["Leads","—","Demonstração"],["Em negociação","—","Demonstração"],["Parceiros","—","Demonstração"],["Inativos","—","Demonstração"]])}<article class="hub-panel"><h2>Gestão de parcerias</h2>${emptyRows(["Empresa","Contato","Interesse","Status","Responsável","Próxima ação"],6)}</article>`,
     voluntarios: `${cards([["Novos","—","Sem dados pessoais"],["Entrevista","—","Sem agenda"],["Ativos","—","Sem validação"],["Pausados","—","Demonstração"]])}<article class="hub-panel"><h2>Cadastros de voluntariado</h2>${emptyRows(["Nome","Área","Disponibilidade","Status","Projeto","Último contato"],6)}<p class="hub-note">LGPD: coletar somente dados necessários, consentimento e documentos aplicáveis ao projeto.</p></article>`,
@@ -19,4 +19,22 @@
   document.querySelector("[data-hub-search]")?.addEventListener("input",e=>{const term=e.target.value.toLowerCase();document.querySelectorAll("[data-card],.hub-tr:not(.hub-th)").forEach(x=>x.hidden=!x.textContent.toLowerCase().includes(term));});
   document.querySelectorAll("[data-stage]").forEach(select=>select.addEventListener("change",()=>{select.closest("[data-card]").dataset.pendingMove="true"; select.insertAdjacentHTML("afterend",'<small class="hub-warning">Alteração apenas visual; não foi salva.</small>');}));
   document.querySelector("[data-test-ia]")?.addEventListener("click",()=>alert("Modo de teste: nenhuma pergunta ou resposta será publicada."));
+
+  if (view === "crm" && !authContext.demo) {
+    const escape = (value) => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+    const stages = [
+      ["Novo lead", ["novo_lead"]], ["Qualificação", ["qualificacao","diagnostico"]],
+      ["Contato realizado", ["contato_realizado"]], ["Negociação", ["reuniao","proposta","negociacao"]],
+      ["Parceria", ["parceria","execucao","relatorio","renovacao","pos_parceria"]]
+    ];
+    const fields = "id,created_at,form_type,name,interest,organization,project_interest,support_type,monthly_amount_interest,pipeline_stage,assigned_to,last_contacted_at";
+    const response = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?select=${fields}&order=created_at.desc&limit=200`, {}, authContext.user.access_token || window.ASAS_AUTH.readSession().access_token);
+    const kanban = document.querySelector("[data-kanban]");
+    if (!response.ok) kanban.innerHTML = '<p class="hub-empty">Não foi possível carregar os contatos. Verifique o perfil de acesso ou tente novamente.</p>';
+    else {
+      const leads = await response.json();
+      const card = lead => `<article data-card><strong>${escape(lead.name)}</strong><small>${escape(lead.organization || lead.form_type)}</small><p>Interesse: ${escape(lead.project_interest || lead.interest || lead.support_type || "não classificado")}<br>Origem: ${escape(lead.form_type)}<br>Recebido: ${new Date(lead.created_at).toLocaleDateString("pt-BR")}</p>${lead.monthly_amount_interest ? `<b>Interesse mensal: ${escape(lead.monthly_amount_interest)}</b>` : ""}</article>`;
+      kanban.innerHTML = stages.map(([label,values]) => { const matches = leads.filter(lead => values.includes(lead.pipeline_stage)); return `<section><h2>${label}<span>${matches.length}</span></h2>${matches.length ? matches.map(card).join("") : '<p class="hub-empty">Sem contatos</p>'}</section>`; }).join("");
+    }
+  }
 })();
