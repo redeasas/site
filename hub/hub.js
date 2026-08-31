@@ -1,4 +1,5 @@
-(() => {
+(async () => {
+  await window.ASAS_AUTH_READY;
   const view = document.body.dataset.hubView || "crm";
   const labels = { mantenedor:"Ficha 360°", crm:"CRM", financeiro:"Financeiro", empresas:"Empresas", voluntarios:"Voluntários", impacto:"Impacto", ia:"IA ASAS" };
   const prefix = view === "mantenedor" ? "../../" : "../";
