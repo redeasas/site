@@ -16,7 +16,7 @@
 
   const header = document.querySelector("header.header");
   if (header) {
-    header.innerHTML = `<a class="brand" href="${rootPrefix}index.html" aria-label="Rede ASAS Brasil — início"><img src="${rootPrefix}assets/images/logo-rede-asas-transparente.png" alt="Rede ASAS Brasil" width="186" height="76"></a><button class="menu" type="button" data-menu-toggle aria-controls="main-nav" aria-label="Abrir menu" aria-expanded="false">Menu</button><nav id="main-nav" data-nav aria-label="Navegação principal">${navItems.map(([href,label]) => `<a href="${rootPrefix}${href}"${href === activePage ? ' class="active" aria-current="page"' : href === "1000-asas.html" ? ' class="nav-cta"' : ""}>${label}</a>`).join("")}</nav>`;
+    header.innerHTML = `<a class="brand brand-official" href="${rootPrefix}index.html" aria-label="Rede ASAS Brasil — início"><span><img src="${rootPrefix}assets/images/logo-rede-asas-oficial.png" alt="Rede ASAS Brasil" width="1536" height="1024"></span></a><button class="menu" type="button" data-menu-toggle aria-controls="main-nav" aria-label="Abrir menu" aria-expanded="false">Menu</button><nav id="main-nav" data-nav aria-label="Navegação principal">${navItems.map(([href,label]) => `<a href="${rootPrefix}${href}"${href === activePage ? ' class="active" aria-current="page"' : href === "1000-asas.html" ? ' class="nav-cta"' : ""}>${label}</a>`).join("")}</nav>`;
   }
 
   document.querySelectorAll(".utility").forEach((el) => {
@@ -48,8 +48,9 @@
 
   const footer = document.querySelector("footer.footer");
   if (footer) footer.innerHTML = `<div class="footer-main"><div><img src="assets/images/logo-rede-asas-transparente.png" alt="Rede ASAS Brasil" width="760" height="430"><p>Desde 1996, educação, cuidado e oportunidades.</p><a href="confiar.html">Por que confiar</a></div><div><h3>Institucional</h3><a href="quem-somos.html">Quem somos</a><a href="projetos.html">Projetos</a><a href="impacto.html">Impacto</a><a href="historias.html">Histórias</a></div><div><h3>Transparência</h3><a href="transparencia.html">Portal da Transparência</a><a href="relatorios.html">Relatórios</a><a href="governanca.html">Governança</a><a href="integridade.html">Integridade</a></div><div><h3>Participe</h3><a href="1000-asas.html">1.000 ASAS</a><a href="apoie.html">Outras formas de apoio</a><a href="novo-predio.html">Novo prédio</a><a href="empresas.html">Empresas</a><a href="voluntariado.html">Voluntariado</a><a href="visita.html">Agendar visita</a></div><div><h3>Contato oficial</h3><a href="mailto:${org.email}">${org.email}</a><a href="https://wa.me/${org.whatsappNumber}">${org.whatsappDisplay}</a><a href="privacidade.html">Privacidade</a><p>${org.address}</p></div></div><div class="footer-legal"><span>© ${new Date().getFullYear()} ${org.publicName}</span><span>CNPJ ${org.cnpj}</span></div>`;
+  footer?.querySelector('img[src^="assets/"]')?.setAttribute("src", `${rootPrefix}assets/images/logo-rede-asas-oficial.png`);
   if (nestedProject && footer) {
-    footer.querySelector('img[src^="assets/"]')?.setAttribute("src", `${rootPrefix}assets/images/logo-rede-asas-transparente.png`);
+    footer.querySelector('img[src^="assets/"]')?.setAttribute("src", `${rootPrefix}assets/images/logo-rede-asas-oficial.png`);
     footer.querySelectorAll('a[href$=".html"]').forEach((link) => link.setAttribute("href", `${rootPrefix}${link.getAttribute("href")}`));
   }
 
@@ -234,7 +235,7 @@
         : page === "novo-predio.html"
           ? "Posso explicar o projeto do novo prédio e as formas responsáveis de apoiar."
           : "Posso apresentar nosso trabalho ou ajudar você a encontrar uma maneira de fazer parte dele.";
-  helpWidget.innerHTML = `<button class="help-trigger" type="button" aria-expanded="false" aria-controls="help-panel"><span class="help-dot" aria-hidden="true"></span>Posso ajudar?</button><div class="help-panel" id="help-panel" hidden role="dialog" aria-modal="false" aria-labelledby="help-title"><button class="help-close" type="button" aria-label="Fechar atendimento">×</button><div class="help-chat" aria-live="polite"><p class="help-greeting">IA ASAS · Assistente virtual da Rede ASAS</p><h2 id="help-title">Como posso ajudar?</h2><div class="help-message bot">${helpContext}</div><div class="help-options">${Object.entries(supportOptions).map(([key,item]) => `<button type="button" data-help-topic="${key}">${item.label}<span>→</span></button>`).join("")}</div><div class="help-answer" data-help-answer hidden></div></div><small>Atendimento automatizado com informações públicas aprovadas.</small></div>`;
+  helpWidget.innerHTML = `<button class="help-trigger" type="button" aria-expanded="false" aria-controls="help-panel"><span class="help-dot" aria-hidden="true"></span>Posso ajudar?</button><div class="help-panel" id="help-panel" hidden role="dialog" aria-modal="false" aria-labelledby="help-title"><button class="help-close" type="button" aria-label="Fechar atendimento">×</button><div class="help-chat" aria-live="polite"><p class="help-greeting">IA ASAS · Assistente virtual da Rede ASAS</p><h2 id="help-title">Como posso ajudar?</h2><div class="help-message bot">${helpContext}</div><div class="help-options">${Object.entries(supportOptions).map(([key,item]) => `<button type="button" data-help-topic="${key}">${item.label}<span>→</span></button>`).join("")}</div><div class="help-answer" data-help-answer hidden></div><form class="help-input" data-help-form><label class="sr-only" for="help-question">Digite sua pergunta</label><input id="help-question" name="pergunta" autocomplete="off" maxlength="240" placeholder="Digite sua mensagem…" required><button type="submit" aria-label="Enviar pergunta">➤</button></form></div><small>Atendimento automatizado com informações públicas aprovadas. Não substitui a equipe.</small></div>`;
   document.body.appendChild(helpWidget);
   const trigger = helpWidget.querySelector(".help-trigger"), panel = helpWidget.querySelector(".help-panel"), closer = helpWidget.querySelector(".help-close");
   const focusables = () => [...panel.querySelectorAll('button,a[href]')];
@@ -253,6 +254,23 @@
     track("chatbot_topic", { topic: button.dataset.helpTopic });
   });
   answer.addEventListener("click", (event) => { if (!event.target.closest("[data-help-back]")) return; answer.hidden = true; answer.innerHTML = ""; options.hidden = false; options.querySelector("button")?.focus(); });
+  const helpForm = helpWidget.querySelector("[data-help-form]");
+  helpForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = helpForm.elements.pergunta;
+    const question = input.value.trim();
+    if (!question) return;
+    const normalized = question.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const topic = /predio|obra|construcao/.test(normalized) ? "predio" : /empresa|parceria|patrocin/.test(normalized) ? "empresas" : /voluntar/.test(normalized) ? "voluntariado" : /projeto|creche|educacao|esporte|cultura/.test(normalized) ? "projetos" : /doa|ajud|pix|1000|mantenedor/.test(normalized) ? "doar" : "contato";
+    const item = supportOptions[topic];
+    const links = item.links.map(([href,label]) => `<a href="${rootPrefix}${href}">${label}<span>→</span></a>`).join("");
+    const whatsapp = `https://wa.me/${org.whatsappNumber}?text=${encodeURIComponent(item.whatsapp)}`;
+    answer.hidden = false;
+    answer.innerHTML = `<div class="help-message user">${question.replace(/[<>&]/g, "")}</div><div class="help-message bot">${item.answer}</div><div class="help-actions">${links}<a class="help-whatsapp" href="${whatsapp}" target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a></div>`;
+    options.hidden = true;
+    input.value = "";
+    track("chatbot_free_text", { topic });
+  });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !panel.hidden) { setHelp(false); trigger.focus(); } });
   panel.addEventListener("keydown", (event) => { if (event.key !== "Tab") return; const items = focusables(); const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } });
 
