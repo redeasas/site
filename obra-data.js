@@ -1,9 +1,9 @@
 /* Dados públicos validados do novo prédio. Fonte: planilha oficial de controle. */
 window.ASAS_OBRA = Object.freeze({
-  reviewedAt: "2026-08-23",
+  reviewedAt: "2026-09-02",
   areaM2: 640,
   budget: { status: "estimativa-preliminar", low: 2500711.85934336, base: 3321980.35059456, high: 4533850.743459839, source: "Orcamento_Preliminar_Rede_ASAS_Brasil.xlsx" },
-  raised: { value: null, status: "aguardando-conciliacao" },
+  raised: { value: 0, status: "campanha-nao-iniciada" },
   paid: { value: null, status: "aguardando-documentos-e-conciliacao" },
   balance: { value: null, status: "aguardando-conciliacao" },
   physicalProgress: { value: null, status: "aguardando-medicao-tecnica" },
