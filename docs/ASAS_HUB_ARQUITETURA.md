@@ -1,8 +1,10 @@
 # ASAS HUB — fundação técnica
 
-## Limite desta etapa
+## Estado operacional
 
-Esta fase prepara o banco e os contratos de segurança. Ela não cria usuários, não importa dados pessoais, não ativa cobrança e não conecta os protótipos públicos diretamente ao banco.
+O banco, a autenticação, o controle por múltiplos perfis, o CRM, os cadastros, os fluxos de aprovação, a auditoria e a administração de usuários estão implantados. O modo demonstrativo existe apenas em localhost e não consulta dados reais.
+
+Dependências externas permanecem bloqueadas por configuração segura: cobrança recorrente requer `ASAAS_API_KEY`, `ASAAS_ENVIRONMENT` e `ASAAS_WEBHOOK_TOKEN`; notificações por e-mail requerem `RESEND_API_KEY`, `LEAD_NOTIFICATION_TO` e remetente verificado. Indicadores e valores somente podem ser publicados depois de conciliação documental e aprovação administrativa.
 
 ## Perfis previstos
 
@@ -23,11 +25,12 @@ O acesso é negado por padrão. Cada tabela usa RLS e a função `asas_has_role`
 5. A IA pública somente receberá conteúdo da visão `asas_public_knowledge`, preenchida por itens revisados e publicados.
 6. Alterações nas entidades sensíveis geram registros em `asas_audit_log`.
 
-## Próximas ativações, em ordem
+## Controles implantados
 
-1. Criar o primeiro usuário administrador com MFA e política de recuperação.
-2. Construir autenticação em domínio separado ou rota protegida, nunca no GitHub Pages estático.
-3. Conectar o HUB à API com sessão e RLS; remover dados mock somente módulo a módulo.
-4. Escolher gateway e validar assinatura dos webhooks antes de registrar eventos financeiros.
-5. Criar política LGPD operacional: finalidade, retenção, exportação, correção e exclusão.
-6. Executar revisão de segurança e homologação antes de uso real.
+1. Conta individual, recuperação de senha e expiração de sessão.
+2. Autorização no banco com RLS e negação por padrão.
+3. Múltiplos perfis por usuário e suspensão administrativa de acesso.
+4. Trilha de auditoria para entidades sensíveis.
+5. Funil único para contatos recebidos pelo site.
+6. Conteúdo e indicadores com rascunho, validação, aprovação e publicação.
+7. Webhook financeiro idempotente e armazenamento apenas de referências do gateway.

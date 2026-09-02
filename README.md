@@ -1,6 +1,6 @@
 # Ecossistema digital Rede ASAS Brasil
 
-Site institucional, campanha 1.000 ASAS e protótipos de validação do ASAS HUB.
+Site institucional, campanha 1.000 ASAS e ASAS HUB protegido por autenticação, RLS e trilha de auditoria.
 
 ## Arquivos
 
@@ -11,13 +11,13 @@ Site institucional, campanha 1.000 ASAS e protótipos de validação do ASAS HUB
 - `docs/OPERACAO_DO_SITE.md`: rotina interna de atendimento, segurança e manutenção.
 - `dados-internos/`: modelos para validar impacto, obra e transparência antes da publicação.
 - `assets/images/`: imagens, logos dos projetos e QR Code PIX.
-- `asas-hub.html`: dashboard demonstrativo do ASAS HUB.
-- `hub/`: telas internas demonstrativas (ficha 360°, CRM, financeiro, empresas, voluntários, impacto e IA).
+- `asas-hub.html`: dashboard autenticado do ASAS HUB; em localhost exibe somente uma demonstração sem dados reais.
+- `hub/`: módulos internos de mantenedores, CRM, financeiro, empresas, voluntários, impacto, IA, auditoria e usuários.
 - `minha-asa.html`: protótipo separado do portal privado do mantenedor.
 
-## Segurança dos protótipos
+## Segurança do ASAS HUB
 
-As telas do ASAS HUB estão marcadas com `noindex,nofollow` e exibem somente dados fictícios. Elas não autenticam usuários, não realizam cobranças, não enviam mensagens e não substituem o backend com RBAC, trilha de auditoria e webhooks. Nenhuma tela interna deve ser usada operacionalmente antes dessas integrações e de uma revisão de segurança/LGPD.
+As telas estão marcadas com `noindex,nofollow`. Fora do ambiente local, exigem conta individual ativa e consultam o Supabase sob RLS. A navegação e as operações são limitadas por perfil, e alterações sensíveis geram auditoria. Cobranças continuam desativadas enquanto os segredos institucionais do Asaas não estiverem configurados; nenhum número completo de cartão ou CVV é armazenado.
 
 ## Doação
 
