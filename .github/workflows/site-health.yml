@@ -2,6 +2,8 @@ name: Site health
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
   schedule:
     - cron: "17 11 * * 1"
 
@@ -9,10 +11,27 @@ permissions:
   contents: read
 
 jobs:
+  platform-static-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JavaScript syntax
+        run: |
+          node --check hub/auth.js
+          node --check hub/login.js
+          node --check hub/dashboard.js
+          node --check hub/hub.js
+      - name: Validate required platform files
+        run: |
+          test -f asas-hub.html
+          test -f hub/login.html
+          test -f hub/crm.html
+          test -f hub/financeiro.html
+          test -f hub/usuarios.html
+          test -f supabase/functions/staff-manage/index.ts
   public-pages:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Check published pages and hidden drafts
         run: bash scripts/check-site.sh
-
