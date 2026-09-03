@@ -99,5 +99,12 @@ window.ASAS_CONFIG = Object.freeze({
     mode: "secure-api-with-email-fallback",
     allowedOrigins: ["https://redeasas.org.br", "https://www.redeasas.org.br", "https://redeasas.github.io"],
   },
+  payments: {
+    provider: "Asaas",
+    environment: "sandbox",
+    checkoutEndpoint: "https://yljvlllrvibyongccgmz.supabase.co/functions/v1/payment-checkout",
+    sandboxPreviewParameter: "validacao",
+    sandboxPreviewValue: "121",
+  },
   publicReviewMessage: "Dados institucionais em processo de atualização.",
 });
