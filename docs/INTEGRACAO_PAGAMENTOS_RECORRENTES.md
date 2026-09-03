@@ -36,6 +36,7 @@ Configurar apenas os eventos necessários de checkout, assinatura e cobrança. O
 - Checkout recorrente criado com sucesso usando página hospedada pelo Asaas.
 - Webhook salvo no Asaas e autenticação do token validada.
 - Dados de cartão, CPF e endereço não passam pelo site da Rede ASAS.
+- O financeiro separa valor bruto, tarifa efetiva e valor líquido; campos ausentes no retorno do gateway permanecem vazios em vez de receber estimativas.
 
 ## Pendências antes de produção
 
