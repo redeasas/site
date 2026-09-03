@@ -180,9 +180,12 @@
     ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((key) => { if (query.get(key)) lines.push(`${key}: ${query.get(key)}`); });
     const leadType = data.get("interesse") || form.dataset.formType || "contato";
     const status = form.querySelector("[data-form-status]");
-    const campaignCheckout = form.dataset.formType === "1000-asas-interesse" &&
-      config.payments?.environment === "sandbox" &&
-      query.get(config.payments?.sandboxPreviewParameter) === config.payments?.sandboxPreviewValue;
+    const campaignCheckout = form.dataset.formType === "1000-asas-interesse" && (
+      config.payments?.environment === "production" || (
+        config.payments?.environment === "sandbox" &&
+        query.get(config.payments?.sandboxPreviewParameter) === config.payments?.sandboxPreviewValue
+      )
+    );
     track("lead_submit", { lead_type: leadType });
     if (form.dataset.formType === "newsletter") track("newsletter_interest", { preferences: data.getAll("preferencias").join(",") });
     const subject = `Contato pelo site — ${data.get("interesse") || form.dataset.formType || "Rede ASAS"}`;
@@ -198,7 +201,8 @@
     ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((key) => { if (query.get(key)) payload[key] = query.get(key); });
     try {
       if (campaignCheckout) {
-        const amount = Number(String(payload.valor_mensal || payload.valor_mensal_selecao || "").replace(/[^0-9,]/g, "").replace(",", "."));
+        const selectedAmount = payload.valor_mensal_selecao === "Outro valor" ? payload.valor_mensal_outro : (payload.valor_mensal || payload.valor_mensal_selecao);
+        const amount = Number(String(selectedAmount || "").replace(/[^0-9,]/g, "").replace(",", "."));
         if (!Number.isFinite(amount) || amount < 10) throw new Error("invalid_amount");
         if (status) status.textContent = "Criando checkout seguro no ambiente de testes do Asaas…";
         const checkoutResponse = await fetch(config.payments.checkoutEndpoint, {
@@ -302,7 +306,7 @@
     document.querySelectorAll("[data-asas-value]").forEach((item) => item.classList.toggle("is-selected", item === button));
     const select = document.querySelector("[data-asas-value-select]");
     const hidden = document.querySelector("[data-asas-value-input]");
-    if (select) select.value = value;
+    if (select) { select.value = value; select.dispatchEvent(new Event("change", { bubbles: true })); }
     if (hidden) hidden.value = value;
     document.querySelector(".asas-interest-form")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
     track("1000_asas_value_selected", { value });
@@ -311,6 +315,11 @@
     const hidden = document.querySelector("[data-asas-value-input]");
     if (hidden) hidden.value = event.target.value;
     document.querySelectorAll("[data-asas-value]").forEach((item) => item.classList.toggle("is-selected", item.dataset.asasValue === event.target.value));
+    const customWrapper = document.querySelector("[data-asas-custom-wrapper]");
+    const customInput = document.querySelector("[data-asas-custom-value]");
+    const customSelected = event.target.value === "Outro valor";
+    if (customWrapper) customWrapper.hidden = !customSelected;
+    if (customInput) customInput.required = customSelected;
   });
 
   const paymentPreview = config.payments?.environment === "sandbox" && new URLSearchParams(location.search).get(config.payments?.sandboxPreviewParameter) === config.payments?.sandboxPreviewValue;
@@ -318,7 +327,12 @@
     const submit = document.querySelector("[data-asas-submit]");
     const note = document.querySelector("[data-asas-security-note]");
     if (submit) submit.textContent = "Testar pagamento seguro no Asaas";
-    if (note) note.textContent = "HOMOLOGAÇÃO: você será direcionado ao Sandbox do Asaas. Não use dados reais e nenhuma cobrança real será feita.";
+    if (note) note.textContent = "HOMOLOGAÇÃO: você será direcionado ao Sandbox do Asaas para testar o cartão recorrente. Não use dados reais e nenhuma cobrança real será feita.";
+  } else if (config.payments?.environment === "production") {
+    const submit = document.querySelector("[data-asas-submit]");
+    const note = document.querySelector("[data-asas-security-note]");
+    if (submit) submit.textContent = "Continuar para pagamento seguro";
+    if (note) note.textContent = "Você concluirá a adesão no ambiente seguro do Asaas. A Rede ASAS não recebe os dados completos do seu cartão.";
   }
 
   const backToTop = document.createElement("button");
