@@ -21,7 +21,12 @@ Deno.serve(async request => {
   const status = statusMap[event];
   if (!status) return new Response("ignored",{status:200});
   const eventId = String(payload.id || `${event}:${payment.id}:${payment.status || ""}`);
-  const {error} = await supabase.from("asas_payment_events").insert({supporter_id:agreement.supporter_id,gateway_event_id:eventId,gateway_reference:String(payment.id),event_type:event,status,amount:Number(payment.value)||null,occurred_at:String(payload.dateCreated || new Date().toISOString()),raw_payload:{event,billingType:payment.billingType||null,dueDate:payment.dueDate||null,subscription:payment.subscription||null}});
+  const grossAmount = Number(payment.value);
+  const netAmount = Number(payment.netValue);
+  const hasGross = Number.isFinite(grossAmount) && grossAmount >= 0;
+  const hasNet = Number.isFinite(netAmount) && netAmount >= 0;
+  const feeAmount = hasGross && hasNet ? Math.max(0,grossAmount-netAmount) : null;
+  const {error} = await supabase.from("asas_payment_events").insert({supporter_id:agreement.supporter_id,gateway_event_id:eventId,gateway_reference:String(payment.id),event_type:event,status,amount:hasGross?grossAmount:null,fee_amount:feeAmount,net_amount:hasNet?netAmount:null,billing_type:payment.billingType||null,occurred_at:String(payload.dateCreated || new Date().toISOString()),raw_payload:{event,billingType:payment.billingType||null,dueDate:payment.dueDate||null,subscription:payment.subscription||null}});
   if (error && error.code !== "23505") return new Response("storage_failed",{status:500});
   if (["PAYMENT_CONFIRMED","PAYMENT_RECEIVED"].includes(event)) {
     await supabase.from("asas_recurring_agreements").update({status:"ativo",provider_subscription_ref:payment.subscription||null,updated_at:new Date().toISOString()}).eq("id",agreement.id);
