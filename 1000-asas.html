@@ -53,7 +53,7 @@
         <div class="asas-value-grid" role="list" aria-label="Valores mensais sugeridos">
           <button type="button" data-asas-value="R$ 10">R$ 10<small>por mês</small></button>
           <button type="button" data-asas-value="R$ 20">R$ 20<small>por mês</small></button>
-          <button type="button" data-asas-value="R$ 30">R$ 30<small>por mês</small></button>
+          <button type="button" data-asas-value="R$ 30">R$ 30<small>recomendado · por mês</small></button>
           <button type="button" data-asas-value="R$ 50">R$ 50<small>por mês</small></button>
           <button type="button" data-asas-value="Outro valor">Outro<small>valor mensal</small></button>
         </div>
@@ -65,6 +65,7 @@
             <label>E-mail<input type="email" name="email" autocomplete="email" required /></label>
             <label>WhatsApp<input type="tel" name="telefone" autocomplete="tel" required /></label>
             <label>Valor mensal de interesse<select name="valor_mensal_selecao" data-asas-value-select required><option value="">Selecione</option><option>R$ 10</option><option>R$ 20</option><option>R$ 30</option><option>R$ 50</option><option>Outro valor</option></select></label>
+            <label data-asas-custom-wrapper hidden>Outro valor mensal (mínimo R$ 10)<input type="number" name="valor_mensal_outro" data-asas-custom-value min="10" max="10000" step="0.01" inputmode="decimal" /></label>
           </div>
           <label>Mensagem (opcional)<textarea name="mensagem" placeholder="Se desejar, conte por que quer fazer parte."></textarea></label>
           <label class="honeypot">Não preencha<input name="website" tabindex="-1" autocomplete="off" /></label>

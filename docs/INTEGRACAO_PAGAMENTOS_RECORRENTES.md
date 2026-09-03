@@ -8,6 +8,8 @@ A infraestrutura e as credenciais de Sandbox estão configuradas. O endpoint cri
 
 Asaas Checkout recorrente, usando página hospedada para que o site da Rede ASAS nunca receba número completo de cartão ou CVV.
 
+Na homologação atual, a adesão recorrente utiliza Checkout hospedado com cartão de crédito. PIX e boleto recorrentes dependem de um fluxo adicional e das modalidades habilitadas na conta Asaas de produção; não devem ser anunciados antes dessa validação.
+
 ## Segredos necessários no Supabase
 
 - `ASAAS_ENVIRONMENT`: começar com `sandbox`; mudar para `production` somente após homologação.
