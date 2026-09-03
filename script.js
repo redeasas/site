@@ -180,6 +180,9 @@
     ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((key) => { if (query.get(key)) lines.push(`${key}: ${query.get(key)}`); });
     const leadType = data.get("interesse") || form.dataset.formType || "contato";
     const status = form.querySelector("[data-form-status]");
+    const campaignCheckout = form.dataset.formType === "1000-asas-interesse" &&
+      config.payments?.environment === "sandbox" &&
+      query.get(config.payments?.sandboxPreviewParameter) === config.payments?.sandboxPreviewValue;
     track("lead_submit", { lead_type: leadType });
     if (form.dataset.formType === "newsletter") track("newsletter_interest", { preferences: data.getAll("preferencias").join(",") });
     const subject = `Contato pelo site — ${data.get("interesse") || form.dataset.formType || "Rede ASAS"}`;
@@ -194,6 +197,21 @@
     payload.idempotency_key = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((key) => { if (query.get(key)) payload[key] = query.get(key); });
     try {
+      if (campaignCheckout) {
+        const amount = Number(String(payload.valor_mensal || payload.valor_mensal_selecao || "").replace(/[^0-9,]/g, "").replace(",", "."));
+        if (!Number.isFinite(amount) || amount < 10) throw new Error("invalid_amount");
+        if (status) status.textContent = "Criando checkout seguro no ambiente de testes do Asaas…";
+        const checkoutResponse = await fetch(config.payments.checkoutEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome: payload.nome, email: payload.email, telefone: payload.telefone, valor_mensal: amount, consentimento: true }),
+        });
+        const checkoutResult = await checkoutResponse.json().catch(() => ({}));
+        if (!checkoutResponse.ok || !/^https:\/\/sandbox\.asaas\.com\//.test(checkoutResult.checkout_url || "")) throw new Error("checkout_failed");
+        track("1000_asas_sandbox_checkout_created", { value: amount });
+        location.assign(checkoutResult.checkout_url);
+        return;
+      }
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json().catch(() => ({}));
@@ -212,6 +230,11 @@
       setTimeout(() => { form.dataset.submitting = "false"; }, 3000);
     } catch {
       track("form_error", { lead_type: leadType });
+      if (campaignCheckout) {
+        if (status) status.textContent = "Não foi possível abrir o checkout de testes agora. Nenhuma cobrança foi criada. Tente novamente em alguns minutos.";
+        form.dataset.submitting = "false";
+        return;
+      }
       fallbackToEmail(data, lines, subject, status, form);
     }
   }); });
@@ -289,6 +312,14 @@
     if (hidden) hidden.value = event.target.value;
     document.querySelectorAll("[data-asas-value]").forEach((item) => item.classList.toggle("is-selected", item.dataset.asasValue === event.target.value));
   });
+
+  const paymentPreview = config.payments?.environment === "sandbox" && new URLSearchParams(location.search).get(config.payments?.sandboxPreviewParameter) === config.payments?.sandboxPreviewValue;
+  if (paymentPreview) {
+    const submit = document.querySelector("[data-asas-submit]");
+    const note = document.querySelector("[data-asas-security-note]");
+    if (submit) submit.textContent = "Testar pagamento seguro no Asaas";
+    if (note) note.textContent = "HOMOLOGAÇÃO: você será direcionado ao Sandbox do Asaas. Não use dados reais e nenhuma cobrança real será feita.";
+  }
 
   const backToTop = document.createElement("button");
   backToTop.className = "back-to-top";

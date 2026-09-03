@@ -2,7 +2,7 @@
 
 ## Estado atual
 
-A infraestrutura está publicada, mas o checkout permanece **desativado**. Sem as credenciais e a homologação Sandbox, o endpoint responde `503 integration_not_configured` e nenhuma cobrança é criada.
+A infraestrutura e as credenciais de Sandbox estão configuradas. O endpoint criou checkout hospedado com sucesso e o webhook autenticado respondeu corretamente. O checkout permanece disponível somente na URL privada de homologação (`/1000-asas?validacao=121`); no acesso público comum, o formulário continua registrando interesse sem criar cobrança.
 
 ## Provedor preparado
 
@@ -30,3 +30,16 @@ Configurar apenas os eventos necessários de checkout, assinatura e cobrança. O
 6. O banco não armazena dados completos de cartão ou CVV.
 7. Produção só deve ser habilitada depois de testes de criação, pagamento, falha, duplicidade, cancelamento e estorno no Sandbox.
 
+## Validações concluídas
+
+- Credenciais Sandbox armazenadas como segredos no Supabase.
+- Checkout recorrente criado com sucesso usando página hospedada pelo Asaas.
+- Webhook salvo no Asaas e autenticação do token validada.
+- Dados de cartão, CPF e endereço não passam pelo site da Rede ASAS.
+
+## Pendências antes de produção
+
+- Concluir cadastro e análise documental da conta Asaas de produção.
+- Executar o ciclo completo no Sandbox: confirmação, duplicidade, inadimplência, cancelamento e estorno.
+- Conferir conciliação e numeração das ASAS no painel interno.
+- Trocar a chave e o ambiente para produção somente após aceite formal da homologação.
