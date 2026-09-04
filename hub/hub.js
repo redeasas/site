@@ -12,7 +12,7 @@
   const hasRole = roles => roles.some(role => profileRoles.includes(role));
   const screens = {
     mantenedor: `<div class="hub-profile"><div class="hub-avatar">EX</div><div><small>Mantenedor demonstrativo</small><h2>Pessoa Exemplo</h2><p>ASA #DEMO · Contato protegido · Belo Horizonte/MG</p></div><span class="hub-status">ATIVO — MOCK</span></div>${cards([["Contribuição mensal","R$ —","Gateway não conectado"],["Total contribuído","R$ —","Sem conciliação"],["Indicações","—","Sem dados reais"],["Origem","Demonstração","Não rastreada"]])}<div class="hub-tabs"><button class="active">Resumo</button><button>Pagamentos</button><button>Relacionamento</button><button>Indicações</button><button>Dados pessoais</button><button>Documentos</button></div><section class="hub-two"><article class="hub-panel"><h2>Histórico de pagamentos</h2>${emptyRows(["Competência","Valor","Status","Método"],4)}</article><article class="hub-panel"><h2>Resumo do relacionamento</h2><p class="hub-empty">Nenhuma interação real. Quando o backend estiver ativo, alterações sensíveis gerarão trilha de auditoria.</p><h3>Notas da equipe</h3><p>Campo demonstrativo com acesso condicionado ao perfil autorizado.</p></article></section>`,
-    crm: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar contatos autorizados…"><button disabled>Filtros</button><button disabled>+ Novo lead</button></div><p class="hub-note">Dados reais protegidos por sessão, perfil de acesso e trilha de auditoria. Exibição limitada ao necessário para triagem.</p><div class="hub-kanban" data-kanban><p class="hub-empty">Carregando contatos com segurança…</p></div>`,
+    crm: `<div class="hub-toolbar"><input data-hub-search placeholder="Buscar por nome, telefone ou e-mail…"><select data-contact-filter aria-label="Filtrar situação do contato"><option value="">Todos os contatos</option><option value="a_contatar">Ainda será contatado</option><option value="contatado">Já entrou em contato</option><option value="sem_canal">Sem telefone ou e-mail</option></select>${hasRole(["admin"])?'<button type="button" data-import-contacts>Importar contatos (.vcf)</button><input data-import-file type="file" accept=".vcf,text/vcard" hidden>':''}<p class="hub-import-status" data-import-status aria-live="polite"></p></div><p class="hub-note">Dados reais protegidos por sessão, perfil de acesso e trilha de auditoria. Use a situação do contato para separar quem já foi atendido de quem ainda receberá contato.</p><div class="hub-kanban" data-kanban><p class="hub-empty">Carregando contatos com segurança…</p></div><div class="hub-pagination" data-pagination hidden><button type="button" data-page-prev>← Anterior</button><span data-page-status></span><button type="button" data-page-next>Próxima →</button></div>`,
     financeiro: `${cards([["Valor bruto","R$ —","Somente pagamentos confirmados"],["Tarifas","R$ —","Informadas pelo gateway"],["Valor líquido","R$ —","Após conciliação"],["Pendências","—","Fora do total recebido"]])}<section class="hub-two"><article class="hub-panel"><h2>Evolução da receita líquida</h2><div class="hub-chart-empty">Gráfico aguardando pagamentos reais conciliados</div></article><article class="hub-panel"><h2>Origem da receita</h2><div class="hub-donut"><b>SEM<br>DADOS</b></div></article></section><article class="hub-panel"><h2>Movimentações</h2>${emptyRows(["Data","Status","Bruto","Tarifa","Líquido","Forma"],5)}<p class="hub-note">Valores de tarifa e líquido nunca são estimados: aparecem somente quando informados e conciliados pelo gateway. Nenhum dado completo de cartão é armazenado.</p></article>`,
     empresas: `${cards([["Leads","—","Demonstração"],["Em negociação","—","Demonstração"],["Parceiros","—","Demonstração"],["Inativos","—","Demonstração"]])}<article class="hub-panel"><h2>Gestão de parcerias</h2>${emptyRows(["Empresa","Contato","Interesse","Status","Responsável","Próxima ação"],6)}</article>`,
     voluntarios: `${cards([["Novos","—","Sem dados pessoais"],["Entrevista","—","Sem agenda"],["Ativos","—","Sem validação"],["Pausados","—","Demonstração"]])}<article class="hub-panel"><h2>Cadastros de voluntariado</h2>${emptyRows(["Nome","Área","Disponibilidade","Status","Projeto","Último contato"],6)}<p class="hub-note">LGPD: coletar somente dados necessários, consentimento e documentos aplicáveis ao projeto.</p></article>`,
@@ -36,17 +36,42 @@
       ["Contato realizado", ["contato_realizado"]], ["Negociação", ["reuniao","proposta","negociacao"]],
       ["Parceria", ["parceria","execucao","relatorio","renovacao","pos_parceria"]]
     ];
-    const fields = "id,created_at,form_type,name,interest,organization,project_interest,support_type,monthly_amount_interest,pipeline_stage,assigned_to,last_contacted_at,next_action_at,interaction_note";
-    const response = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?select=${fields}&order=created_at.desc&limit=200`, {}, token);
     const kanban = document.querySelector("[data-kanban]");
-    if (!response.ok) kanban.innerHTML = '<p class="hub-empty">Não foi possível carregar os contatos. Verifique o perfil de acesso ou tente novamente.</p>';
-    else {
+    const fields = "id,created_at,form_type,name,email,phone,interest,organization,project_interest,support_type,monthly_amount_interest,pipeline_stage,contact_status,assigned_to,last_contacted_at,next_action_at,interaction_note";
+    const pageSize = 100;
+    let currentPage = 0;
+    let searchTerm = "";
+    let contactFilter = "";
+    const phoneDigits = value => String(value || "").replace(/\D/g, "");
+    const whatsappNumber = value => { const digits = phoneDigits(value); return digits.length >= 10 && !digits.startsWith("55") ? `55${digits}` : digits; };
+    const renderLeads = async () => {
+      kanban.innerHTML = '<p class="hub-empty">Carregando contatos com segurança…</p>';
+      const filters = contactFilter ? `&contact_status=eq.${encodeURIComponent(contactFilter)}` : "";
+      const search = searchTerm ? `&or=${encodeURIComponent(`(name.ilike.*${searchTerm}*,phone.ilike.*${searchTerm}*,email.ilike.*${searchTerm}*)`)}` : "";
+      const start = currentPage * pageSize;
+      const response = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?select=${fields}${filters}${search}&order=created_at.desc`, { headers:{ Range:`${start}-${start + pageSize - 1}`, Prefer:"count=exact" } }, token);
+      if (!response.ok) { kanban.innerHTML = '<p class="hub-empty">Não foi possível carregar os contatos. Verifique o perfil de acesso ou tente novamente.</p>'; return; }
       const leads = await response.json();
+      const total = Number((response.headers.get("content-range") || "0/0").split("/")[1]) || leads.length;
       const stageOptions = stages.flatMap(([,values])=>values).map(value=>`<option value="${value}">${value.replaceAll("_"," ")}</option>`).join("");
-      const card = lead => `<article data-card data-lead-id="${escapeHtml(lead.id)}"><strong>${escapeHtml(lead.name)}</strong><small>${escapeHtml(lead.organization || lead.form_type)}</small><p>Interesse: ${escapeHtml(lead.project_interest || lead.interest || lead.support_type || "não classificado")}<br>Origem: ${escapeHtml(lead.form_type)}<br>Recebido: ${new Date(lead.created_at).toLocaleDateString("pt-BR")}</p>${lead.monthly_amount_interest ? `<b>Interesse mensal: ${escapeHtml(lead.monthly_amount_interest)}</b>` : ""}<label>Etapa<select data-lead-stage>${stageOptions}</select></label><label>Responsável<input data-lead-owner maxlength="100" value="${escapeHtml(lead.assigned_to || "")}" placeholder="Nome da pessoa responsável"></label><label>Próxima ação<input data-lead-next type="date" value="${lead.next_action_at ? lead.next_action_at.slice(0,10) : ""}"></label><label>Nota breve<textarea data-lead-note maxlength="500" placeholder="Sem dados sensíveis">${escapeHtml(lead.interaction_note || "")}</textarea></label><button type="button" data-save-lead>Salvar acompanhamento</button><span class="hub-save-status" aria-live="polite"></span></article>`;
+      const contactOptions = [["a_contatar","Ainda será contatado"],["contatado","Já entrou em contato"],["sem_canal","Sem telefone ou e-mail"]].map(([value,label])=>`<option value="${value}">${label}</option>`).join("");
+      const card = lead => {
+        const whatsapp = whatsappNumber(lead.phone);
+        const actions = `${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">WhatsApp</a><a href="tel:+${phoneDigits(lead.phone)}">Ligar</a>` : ""}${lead.email ? `<a href="mailto:${escapeHtml(lead.email)}">E-mail</a>` : ""}`;
+        return `<article data-card data-lead-id="${escapeHtml(lead.id)}"><strong>${escapeHtml(lead.name)}</strong><small>${escapeHtml(lead.organization || lead.form_type)}</small><div class="hub-contact-actions">${actions || "Sem canal de contato cadastrado"}</div><p>Telefone: ${escapeHtml(lead.phone || "—")}<br>E-mail: ${escapeHtml(lead.email || "—")}<br>Interesse: ${escapeHtml(lead.project_interest || lead.interest || lead.support_type || "não classificado")}<br>Origem: ${escapeHtml(lead.form_type)}<br>Recebido: ${new Date(lead.created_at).toLocaleDateString("pt-BR")}</p>${lead.monthly_amount_interest ? `<b>Interesse mensal: ${escapeHtml(lead.monthly_amount_interest)}</b>` : ""}<label>Situação do contato<select data-contact-status>${contactOptions}</select></label><label>Etapa<select data-lead-stage>${stageOptions}</select></label><label>Responsável<input data-lead-owner maxlength="100" value="${escapeHtml(lead.assigned_to || "")}" placeholder="Nome da pessoa responsável"></label><label>Próxima ação<input data-lead-next type="date" value="${lead.next_action_at ? lead.next_action_at.slice(0,10) : ""}"></label><label>Nota breve<textarea data-lead-note maxlength="500" placeholder="Sem dados sensíveis">${escapeHtml(lead.interaction_note || "")}</textarea></label><button type="button" data-save-lead>Salvar acompanhamento</button><span class="hub-save-status" aria-live="polite"></span></article>`;
+      };
       kanban.innerHTML = stages.map(([label,values]) => { const matches = leads.filter(lead => values.includes(lead.pipeline_stage)); return `<section><h2>${label}<span>${matches.length}</span></h2>${matches.length ? matches.map(card).join("") : '<p class="hub-empty">Sem contatos</p>'}</section>`; }).join("");
-      leads.forEach(lead => { const select = kanban.querySelector(`[data-lead-id="${CSS.escape(lead.id)}"] [data-lead-stage]`); if (select) select.value = lead.pipeline_stage; });
-      kanban.addEventListener("click", async event => {
+      leads.forEach(lead => {
+        const leadCard = kanban.querySelector(`[data-lead-id="${CSS.escape(lead.id)}"]`);
+        if (leadCard) { leadCard.querySelector("[data-lead-stage]").value = lead.pipeline_stage; leadCard.querySelector("[data-contact-status]").value = lead.contact_status || "a_contatar"; }
+      });
+      const pagination = document.querySelector("[data-pagination]");
+      pagination.hidden = false;
+      pagination.querySelector("[data-page-status]").textContent = `${start + (leads.length ? 1 : 0)}–${Math.min(start + leads.length,total)} de ${total}`;
+      pagination.querySelector("[data-page-prev]").disabled = currentPage === 0;
+      pagination.querySelector("[data-page-next]").disabled = start + leads.length >= total;
+    };
+    kanban.addEventListener("click", async event => {
         const button = event.target.closest("[data-save-lead]");
         if (!button) return;
         const leadCard = button.closest("[data-lead-id]");
@@ -56,17 +81,56 @@
         const nextDate = leadCard.querySelector("[data-lead-next]").value;
         const payload = {
           pipeline_stage: leadCard.querySelector("[data-lead-stage]").value,
+          contact_status: leadCard.querySelector("[data-contact-status]").value,
           assigned_to: leadCard.querySelector("[data-lead-owner]").value.trim() || null,
           next_action_at: nextDate ? `${nextDate}T12:00:00-03:00` : null,
           interaction_note: leadCard.querySelector("[data-lead-note]").value.trim() || null,
-          last_contacted_at: new Date().toISOString(),
+          last_contacted_at: leadCard.querySelector("[data-contact-status]").value === "contatado" ? new Date().toISOString() : null,
           status: "em_atendimento"
         };
         const saved = await window.ASAS_AUTH.request(`/rest/v1/asas_leads?id=eq.${encodeURIComponent(leadCard.dataset.leadId)}`, { method:"PATCH", headers:{ Prefer:"return=minimal" }, body:JSON.stringify(payload) }, token);
-        if (saved.ok) location.reload();
+        if (saved.ok) { status.textContent = "Acompanhamento salvo."; button.disabled = false; }
         else { status.textContent = "Não foi possível salvar. Verifique sua permissão."; button.disabled = false; }
-      });
-    }
+    });
+    let searchTimer;
+    document.querySelector("[data-hub-search]").addEventListener("input", event => { clearTimeout(searchTimer); searchTimer = setTimeout(()=>{ searchTerm = event.target.value.trim().replace(/[,*()]/g, " "); currentPage = 0; renderLeads(); }, 350); });
+    document.querySelector("[data-contact-filter]").addEventListener("change", event => { contactFilter = event.target.value; currentPage = 0; renderLeads(); });
+    document.querySelector("[data-page-prev]").addEventListener("click", ()=>{ if (currentPage > 0) { currentPage -= 1; renderLeads(); } });
+    document.querySelector("[data-page-next]").addEventListener("click", ()=>{ currentPage += 1; renderLeads(); });
+
+    const decodeVcf = value => value.replace(/\\n/gi,"\n").replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\\\/g,"\\").trim();
+    const parseVcf = text => text.replace(/\r?\n[ \t]/g, "").split(/BEGIN:VCARD/i).slice(1).map(block => {
+      const values = {};
+      block.split(/\r?\n/).forEach(line => { const colon = line.indexOf(":"); if (colon < 0) return; const key = line.slice(0,colon).split(";")[0].toUpperCase(); if (!["FN","N","TEL","EMAIL"].includes(key) || values[key]) return; values[key] = decodeVcf(line.slice(colon + 1)); });
+      const structuredName = (values.N || "").split(";").slice(0,2).reverse().filter(Boolean).join(" ");
+      return { name:values.FN || structuredName || "Contato sem nome", phone:values.TEL || "", email:values.EMAIL || "" };
+    }).filter(contact => contact.name);
+    const importButton = document.querySelector("[data-import-contacts]");
+    const importFile = document.querySelector("[data-import-file]");
+    const importStatus = document.querySelector("[data-import-status]");
+    importButton?.addEventListener("click", ()=>importFile.click());
+    importFile?.addEventListener("change", async () => {
+      const file = importFile.files?.[0];
+      if (!file) return;
+      const contacts = parseVcf(await file.text());
+      if (!contacts.length) { importStatus.textContent = "O arquivo não contém contatos válidos."; return; }
+      if (!confirm(`Importar ${contacts.length.toLocaleString("pt-BR")} contatos para o CRM? Registros idênticos serão ignorados e todos começarão como “Ainda será contatado”.`)) { importFile.value = ""; return; }
+      importButton.disabled = true;
+      const batchId = `vcf-${new Date().toISOString().slice(0,10)}-${crypto.randomUUID()}`;
+      let inserted = 0, duplicated = 0, rejected = 0;
+      try {
+        for (let offset = 0; offset < contacts.length; offset += 200) {
+          importStatus.textContent = `Importando ${Math.min(offset + 200,contacts.length).toLocaleString("pt-BR")} de ${contacts.length.toLocaleString("pt-BR")}…`;
+          const response = await window.ASAS_AUTH.request("/functions/v1/contact-import", { method:"POST", body:JSON.stringify({ batch_id:batchId, source:"Agenda institucional VCF — 04/09/2026", contacts:contacts.slice(offset,offset + 200) }) }, token);
+          if (!response.ok) throw new Error("import_failed");
+          const result = await response.json(); inserted += result.inserted || 0; duplicated += result.duplicated || 0; rejected += result.rejected || 0;
+        }
+        importStatus.textContent = `Importação concluída: ${inserted.toLocaleString("pt-BR")} incluídos, ${duplicated.toLocaleString("pt-BR")} duplicados ignorados e ${rejected.toLocaleString("pt-BR")} rejeitados.`;
+        currentPage = 0; await renderLeads();
+      } catch { importStatus.textContent = "A importação foi interrompida. Os lotes já concluídos permanecem salvos e podem ser reenviados sem duplicar registros."; }
+      finally { importButton.disabled = false; importFile.value = ""; }
+    });
+    await renderLeads();
   }
 
   if (!authContext.demo && ["mantenedor","financeiro","empresas","voluntarios","impacto","ia"].includes(view)) {

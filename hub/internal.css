@@ -47,6 +47,13 @@
 .hub-kanban article textarea{min-height:70px;resize:vertical}
 .hub-kanban article button{width:100%;margin-top:9px;border:0;border-radius:6px;padding:9px;background:var(--hub2);color:#fff;font-weight:800}
 .hub-save-status{display:block;min-height:18px;margin-top:7px;color:#356b17;font-size:.7rem}
+.hub-contact-actions{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.hub-contact-actions a{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;padding:7px 9px;color:var(--hub2);background:#f8fbff;font-size:.7rem;font-weight:800;text-decoration:none}
+.hub-toolbar select{border:1px solid var(--line);border-radius:7px;padding:10px 12px;background:#fff;color:var(--hub)}
+.hub-pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0}
+.hub-pagination button{border:1px solid var(--line);border-radius:6px;padding:9px 13px;background:#fff;color:var(--hub);font-weight:800}
+.hub-pagination button:disabled{opacity:.45}
+.hub-import-status{width:100%;margin:0;color:#38516c;font-size:.78rem}
 .hub-dialog{width:min(760px,calc(100% - 28px));border:0;border-radius:12px;padding:0;box-shadow:0 22px 70px rgba(0,25,58,.3)}
 .hub-dialog::backdrop{background:rgba(0,24,52,.62)}
 .hub-dialog form>header,.hub-dialog form>footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
