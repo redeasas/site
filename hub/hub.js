@@ -122,12 +122,12 @@
         for (let offset = 0; offset < contacts.length; offset += 200) {
           importStatus.textContent = `Importando ${Math.min(offset + 200,contacts.length).toLocaleString("pt-BR")} de ${contacts.length.toLocaleString("pt-BR")}…`;
           const response = await window.ASAS_AUTH.request("/functions/v1/contact-import", { method:"POST", body:JSON.stringify({ batch_id:batchId, source:"Agenda institucional VCF — 04/09/2026", contacts:contacts.slice(offset,offset + 200) }) }, token);
-          if (!response.ok) throw new Error("import_failed");
+          if (!response.ok) { const failure = await response.json().catch(()=>({})); throw new Error(failure.detail || failure.error || `HTTP ${response.status}`); }
           const result = await response.json(); inserted += result.inserted || 0; duplicated += result.duplicated || 0; rejected += result.rejected || 0;
         }
         importStatus.textContent = `Importação concluída: ${inserted.toLocaleString("pt-BR")} incluídos, ${duplicated.toLocaleString("pt-BR")} duplicados ignorados e ${rejected.toLocaleString("pt-BR")} rejeitados.`;
         currentPage = 0; await renderLeads();
-      } catch { importStatus.textContent = "A importação foi interrompida. Os lotes já concluídos permanecem salvos e podem ser reenviados sem duplicar registros."; }
+      } catch (error) { importStatus.textContent = `A importação foi interrompida (${error.message}). Os lotes já concluídos permanecem salvos e podem ser reenviados sem duplicar registros.`; }
       finally { importButton.disabled = false; importFile.value = ""; }
     });
     await renderLeads();
