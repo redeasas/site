@@ -77,7 +77,7 @@ Deno.serve(async (request) => {
   if (!records.length) return Response.json({ ok: true, inserted: 0, duplicated: 0, rejected }, { status: 200, headers: { ...cors, "Cache-Control": "no-store" } });
 
   const { data, error } = await admin.from("asas_leads").upsert(records, { onConflict: "idempotency_key", ignoreDuplicates: true }).select("id");
-  if (error) return Response.json({ error: "import_failed" }, { status: 500, headers: cors });
+  if (error) return Response.json({ error: "import_failed", detail: error.message }, { status: 500, headers: cors });
   const inserted = data?.length || 0;
   await admin.from("asas_audit_log").insert({
     actor_id: user.id,
@@ -88,4 +88,3 @@ Deno.serve(async (request) => {
   });
   return Response.json({ ok: true, inserted, duplicated: records.length - inserted, rejected }, { status: 200, headers: { ...cors, "Cache-Control": "no-store" } });
 });
-
