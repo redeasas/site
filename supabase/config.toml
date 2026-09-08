@@ -1,6 +1,9 @@
 [functions.lead-capture]
 verify_jwt = false
 
+[functions.contact-import]
+verify_jwt = false
+
 [functions.payment-checkout]
 verify_jwt = false
 
