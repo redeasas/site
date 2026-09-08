@@ -23,7 +23,7 @@ Deno.serve(async (request) => {
   const origin = request.headers.get("origin") || "";
   const cors = {
     "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://redeasas.org.br",
-    "Access-Control-Allow-Headers": "authorization, content-type",
+    "Access-Control-Allow-Headers": "apikey, authorization, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin",
   };
